@@ -90,6 +90,16 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
   const [hotels, setHotels] = useState<any[]>([]);
   const router = useRouter();
 
+  // Redirigir cuando success sea true
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        router.push("/stats");
+      }, 2000);
+      return () => clearTimeout(timer); // Limpiar el timeout si el componente se desmonta
+    }
+  }, [success, router]);
+
   // Cargar datos del usuario logueado
   useEffect(() => {
     const storedHotelId = localStorage.getItem("hotelId");
@@ -163,12 +173,11 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
 
       if (!response.ok) throw new Error("Error al guardar");
 
+      // Esto activará el useEffect que redirige a /stats
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       console.error("Error:", error);
       alert("Error al guardar los servicios");
-    } finally {
       setLoading(false);
     }
   };
