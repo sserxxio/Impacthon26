@@ -48,6 +48,68 @@ model Hotel {
   cityHistoric     String?
   cityPrice        String?
   cityGastro       String?
+  amenities        HotelAmenities?
+  analyses         Analysis[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model HotelAmenities {
+  id               Int      @id @default(autoincrement())
+  hotel            Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId          Int      @unique
+  
+  // Instalaciones deportivas
+  piscina          Boolean  @default(false)
+  campoTenis       Boolean  @default(false)
+  padel            Boolean  @default(false)
+  gimnasio         Boolean  @default(false)
+  
+  // Servicios
+  restaurante      Boolean  @default(false)
+  bar              Boolean  @default(false)
+  spa              Boolean  @default(false)
+  sauna            Boolean  @default(false)
+  
+  // Conectividad
+  wifi             Boolean  @default(true)
+  wifiGratis       Boolean  @default(false)
+  
+  // Estacionamiento
+  estacionamiento  Boolean  @default(false)
+  estacionamientoGratis Boolean @default(false)
+  
+  // Mascotas
+  permiteMascotas  Boolean  @default(false)
+  
+  // Accesibilidad
+  accesibilidad    Boolean  @default(false)
+  
+  // Notas adicionales
+  notasAdicionales String?
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Analysis {
+  id               Int      @id @default(autoincrement())
+  hotel            Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId          Int
+  
+  // Resultado del análisis
+  estrategia       String
+  anuncio          String
+  segmentoObjeto   String?
+  diferencadores   String?
+  
+  // Recomendaciones de mejora
+  recomendaciones  String? // JSON array
+  
+  // Metadata
+  modeloUsado      String   @default("gemini-flash-latest")
+  errorCount       Int      @default(0)
+  
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
