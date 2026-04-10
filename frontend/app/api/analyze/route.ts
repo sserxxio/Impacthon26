@@ -36,7 +36,7 @@ Por favor, genere un JSON con:
 Responde SOLO con JSON válido, sin markdown.
 `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     const result = await model.generateContent(prompt);
     const text = result.response.text().replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(text);
