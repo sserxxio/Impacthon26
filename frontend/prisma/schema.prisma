@@ -61,29 +61,38 @@ model HotelAmenities {
   
   // Instalaciones deportivas
   piscina          Boolean  @default(false)
-  campoTenis       Boolean  @default(false)
+  pistasTenis      Boolean  @default(false)
   padel            Boolean  @default(false)
   gimnasio         Boolean  @default(false)
   
-  // Servicios
+  // Servicios principales
   restaurante      Boolean  @default(false)
   bar              Boolean  @default(false)
   spa              Boolean  @default(false)
   sauna            Boolean  @default(false)
+  buffet           Boolean  @default(false)
   
   // Conectividad
-  wifi             Boolean  @default(true)
   wifiGratis       Boolean  @default(false)
   
   // Estacionamiento
-  estacionamiento  Boolean  @default(false)
   estacionamientoGratis Boolean @default(false)
   
-  // Mascotas
+  // Habitaciones y servicios especiales
+  habitacionesVIP  Boolean  @default(false)
   permiteMascotas  Boolean  @default(false)
+  salaJuegos       Boolean  @default(false)
+  guarderia        Boolean  @default(false)
+  sitioFumar       Boolean  @default(false)
   
-  // Accesibilidad
+  // Accesibilidad e idiomas
   accesibilidad    Boolean  @default(false)
+  idiomas          Boolean  @default(false)
+  
+  // Actividades y facilidades
+  actividades      Boolean  @default(false)
+  earlyCheckin     Boolean  @default(false)
+  lateCheckin      Boolean  @default(false)
   
   // Notas adicionales
   notasAdicionales String?

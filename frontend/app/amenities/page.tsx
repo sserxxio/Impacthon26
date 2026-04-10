@@ -5,19 +5,26 @@ import { useRouter } from "next/navigation";
 
 interface Amenities {
   piscina?: boolean;
-  campoTenis?: boolean;
+  pistasTenis?: boolean;
   padel?: boolean;
   gimnasio?: boolean;
   restaurante?: boolean;
   bar?: boolean;
   spa?: boolean;
   sauna?: boolean;
-  wifi?: boolean;
+  buffet?: boolean;
   wifiGratis?: boolean;
-  estacionamiento?: boolean;
   estacionamientoGratis?: boolean;
+  habitacionesVIP?: boolean;
   permiteMascotas?: boolean;
+  salaJuegos?: boolean;
+  guarderia?: boolean;
   accesibilidad?: boolean;
+  idiomas?: boolean;
+  actividades?: boolean;
+  sitioFumar?: boolean;
+  earlyCheckin?: boolean;
+  lateCheckin?: boolean;
   notasAdicionales?: string;
 }
 
@@ -26,39 +33,49 @@ const SERVICIOS = [
     categoria: "🏊 Instalaciones Deportivas",
     items: [
       { key: "piscina", label: "Piscina" },
-      { key: "campoTenis", label: "Campo de Tenis" },
+      { key: "pistasTenis", label: "Pistas de Tenis" },
       { key: "padel", label: "Pádel" },
       { key: "gimnasio", label: "Gimnasio" },
     ],
   },
   {
-    categoria: "🍽️ Servicios",
+    categoria: "🍽️ Servicios de Alojamiento",
     items: [
-      { key: "restaurante", label: "Restaurante Propio" },
+      { key: "restaurante", label: "Restaurante" },
       { key: "bar", label: "Bar" },
+      { key: "buffet", label: "Buffet" },
       { key: "spa", label: "Spa" },
       { key: "sauna", label: "Sauna" },
     ],
   },
   {
-    categoria: "🌐 Conectividad",
+    categoria: "🛏️ Tipos de Habitaciones",
     items: [
-      { key: "wifi", label: "WiFi" },
-      { key: "wifiGratis", label: "WiFi Gratis" },
+      { key: "habitacionesVIP", label: "Habitaciones VIP" },
+      { key: "permiteMascotas", label: "Pet-Friendly (Mascotas permitidas)" },
     ],
   },
   {
-    categoria: "🚗 Estacionamiento",
+    categoria: "👨‍👩‍👧‍👦 Entretenimiento y Niños",
     items: [
-      { key: "estacionamiento", label: "Estacionamiento" },
-      { key: "estacionamientoGratis", label: "Estacionamiento Gratis" },
+      { key: "salaJuegos", label: "Sala de Juegos" },
+      { key: "guarderia", label: "Guardería/Sala para Niños" },
+      { key: "actividades", label: "Actividades y Eventos" },
     ],
   },
   {
-    categoria: "🏥 Otros",
+    categoria: "♿ Accesibilidad e Idiomas",
     items: [
-      { key: "permiteMascotas", label: "Acepta Mascotas" },
-      { key: "accesibilidad", label: "Accesibilidad para Discapacitados" },
+      { key: "accesibilidad", label: "Adaptado para Personas con Discapacidad" },
+      { key: "idiomas", label: "Personal que habla múltiples idiomas" },
+    ],
+  },
+  {
+    categoria: "⏰ Facilidades de Entrada/Salida",
+    items: [
+      { key: "earlyCheckin", label: "Early Check-in" },
+      { key: "lateCheckin", label: "Late Check-in" },
+      { key: "sitioFumar", label: "Zona para Fumar" },
     ],
   },
 ];

@@ -185,7 +185,7 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <p className="text-slate-400 mb-8">
-                  Serás redirigido automáticamente al cuestionario en 2 segundos...
+                  Serás redirigido automáticamente al cuestionario en 10 segundos...
                 </p>
                 <div className="flex gap-4">
                   <button
