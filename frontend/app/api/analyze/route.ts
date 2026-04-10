@@ -1,23 +1,60 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+const prisma = new PrismaClient();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { hotelData, competitorReviews } = await req.json();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const { datosHotel, reseñasCompetencia } = await req.json();
 
-    const prompt = `Actúa como un experto en marketing de hoteles. 
-    Datos: ${JSON.stringify(hotelData)}. 
-    Competencia: ${JSON.stringify(competitorReviews)}.
-    Dame una estrategia y un anuncio corto para redes en JSON.`;
+    // Obtener datos de la BD
+    const clientes = await prisma.customer.findMany({ take: 50 });
+    const hoteles = await prisma.hotel.findMany({ take: 10 });
 
+    // Construir prompt
+    const prompt = `
+Eres un experto en marketing hotelero. Analiza los siguientes datos y proporciona estrategias de marketing predictivo.
+
+DATOS DEL HOTEL:
+${JSON.stringify(datosHotel, null, 2)}
+
+RESEÑAS DE LA COMPETENCIA:
+${JSON.stringify(reseñasCompetencia, null, 2)}
+
+DATOS DE CLIENTES (MUESTRA):
+${JSON.stringify(clientes.slice(0, 5), null, 2)}
+
+Por favor, genere un JSON con:
+1. estrategia: Estrategia de marketing recomendada
+2. anuncio: Copy para redes sociales
+3. segmentoObjeto: Segmento de cliente objetivo
+4. diferenciate: Diferenciadores clave
+5. medidas_accion: Array de medidas a tomar
+
+Responde SOLO con JSON válido, sin markdown.
+`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const result = await model.generateContent(prompt);
-    const response = JSON.parse(result.response.text().replace(/```json|```/g, ""));
+    const text = result.response.text().replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(text);
 
-    return NextResponse.json(response);
+    return NextResponse.json(parsed);
   } catch (error) {
-    return NextResponse.json({ error: "Error de conexión con la IA" }, { status: 500 });
+    console.error("Error en /api/analyze:", error);
+    return NextResponse.json(
+      {
+        error: "Error al procesar",
+        estrategia: "Estrategia de contingencia",
+        anuncio: "Descubre nuestro hotel único con Spa y servicio para mascotas",
+        segmentoObjeto: "Viajeros con mascotas",
+        diferenciate: ["Spa de lujo", "Acepta mascotas", "WiFi de calidad"],
+        medidas_accion: ["Marketing en redes", "Alianzas con agencias de viajes",
+        ],
+      },
+      { status: 500 }
+    );
   }
 }
