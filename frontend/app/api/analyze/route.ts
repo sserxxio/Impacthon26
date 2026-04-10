@@ -9,8 +9,42 @@ export async function POST(req: NextRequest) {
   try {
     const { prompt: userPrompt, datosHotel, hotelId } = await req.json();
 
+    // 🔄 CACHÉ: Buscar análisis previo si existe hotelId
+    if (hotelId) {
+      const intHotelId = parseInt(hotelId);
+      const analisisExistente = await prisma.analysis.findFirst({
+        where: { hotelId: intHotelId },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      // Si existe y fue creado hace menos de 24h, devolverlo (caché)
+      if (analisisExistente) {
+        const ahora = new Date();
+        const hace24h = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+        
+        if (analisisExistente.createdAt > hace24h) {
+          console.log(`✅ Devolviendo análisis cacheado para hotel ${intHotelId}`);
+          const recomendaciones = analisisExistente.recomendaciones 
+            ? JSON.parse(analisisExistente.recomendaciones) 
+            : {};
+          
+          return NextResponse.json({
+            nombre: analisisExistente.anuncio?.substring(0, 20),
+            descripcion: analisisExistente.anuncio,
+            estrategia: analisisExistente.estrategia,
+            coste: recomendaciones.coste || "N/A",
+            tiempo: recomendaciones.tiempo || "N/A",
+            targeting: analisisExistente.segmentoObjeto,
+            roi: analisisExistente.diferencadores,
+            cached: true
+          });
+        }
+      }
+    }
+
+    // 🤖 Si no hay caché válido, llamar a Gemini
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-2.0-flash",
       systemInstruction: `Eres un consultor senior de revenue y marketing hotelero.
       Tu salida DEBE SER UNICAMENTE UN JSON con este formato:
       {
@@ -36,8 +70,14 @@ export async function POST(req: NextRequest) {
         data: {
           hotelId: parseInt(hotelId),
           estrategia: parsed.estrategia,
+          anuncio: parsed.descripcion || parsed.nombre || "Análisis generado",
           segmentoObjeto: parsed.targeting,
-          // Ajusta según tu esquema de base de datos
+          diferencadores: parsed.roi || null,
+          recomendaciones: JSON.stringify({
+            coste: parsed.coste,
+            tiempo: parsed.tiempo,
+            roi: parsed.roi
+          }),
         },
       }).catch(e => console.error("Error guardando en BD:", e));
     }
