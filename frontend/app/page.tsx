@@ -1,11 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface OracleResult {
   estrategia: string;
   anuncio: string;
   targeting: string;
   roi: string;
+  analisisId?: number;
 }
 
 const MODULOS = [
@@ -15,10 +17,27 @@ const MODULOS = [
 ];
 
 export default function Home() {
+  const [hotelName, setHotelName] = useState<string | null>(null);
+  const [hotelId, setHotelId] = useState<number | null>(null);
   const [data, setData] = useState<OracleResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [moduloActivo, setModuloActivo] = useState("shadow_competitor");
+  const router = useRouter();
+
+  // Verificar si está logueado
+  useEffect(() => {
+    const storedHotelId = localStorage.getItem("hotelId");
+    const storedHotelName = localStorage.getItem("hotelName");
+
+    if (!storedHotelId) {
+      router.push("/login");
+      return;
+    }
+
+    setHotelId(parseInt(storedHotelId));
+    setHotelName(storedHotelName || "Hotel");
+  }, [router]);
 
   const ejecutarIA = async () => {
     setLoading(true);
@@ -28,7 +47,12 @@ export default function Home() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ modulo: moduloActivo }),
+        body: JSON.stringify({
+          modulo: moduloActivo,
+          hotelId: hotelId,
+          datosHotel: { nombre: hotelName },
+          reseñasCompetencia: [],
+        }),
       });
       if (!res.ok) throw new Error("Error en la API");
       const result = await res.json();
@@ -41,11 +65,36 @@ export default function Home() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("hotelId");
+    localStorage.removeItem("hotelName");
+    router.push("/login");
+  };
+
+  // No renderizar nada hasta verificar login
+  if (!hotelId) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8">
+      {/* Header con info del hotel y logout */}
       <header className="mb-10">
-        <h1 className="text-4xl font-extrabold text-blue-400">ORACLE AI 🏨</h1>
-        <p className="text-slate-400">Motor de Decisiones de Marketing — IMPACTHON26</p>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-4xl font-extrabold text-blue-400">ORACLE AI 🏨</h1>
+            <p className="text-slate-400">Motor de Decisiones de Marketing — IMPACTHON26</p>
+            <p className="text-sm text-slate-500 mt-2">
+              Conectado: <span className="text-emerald-400 font-bold">{hotelName}</span>
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+          >
+            🚪 Logout
+          </button>
+        </div>
       </header>
 
       {/* Selector de módulos */}
@@ -102,8 +151,23 @@ export default function Home() {
               <p>{data.roi}</p>
             </div>
           </div>
+          {data.analisisId && (
+            <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-center text-sm text-slate-400">
+              ✓ Análisis guardado (ID: {data.analisisId})
+            </div>
+          )}
         </div>
       )}
+
+      {/* Footer - Acceso a Servicios */}
+      <footer className="mt-20 pt-10 border-t border-slate-700 flex gap-4 justify-center">
+        <a
+          href="/amenities"
+          className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-green-500/20"
+        >
+          📋 Gestionar Servicios
+        </a>
+      </footer>
     </div>
   );
 }

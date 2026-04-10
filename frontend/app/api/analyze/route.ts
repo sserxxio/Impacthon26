@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
-    const { datosHotel, reseñasCompetencia } = await req.json();
+    const { datosHotel, reseñasCompetencia, hotelId } = await req.json();
 
     // Obtener datos de la BD
     const clientes = await prisma.customer.findMany({ take: 50 });
@@ -31,7 +31,7 @@ Por favor, genere un JSON con:
 2. anuncio: Copy para redes sociales
 3. segmentoObjeto: Segmento de cliente objetivo
 4. diferenciate: Diferenciadores clave
-5. medidas_accion: Array de medidas a tomar
+5. recomendaciones: Array de recomendaciones de mejora
 
 Responde SOLO con JSON válido, sin markdown.
 `;
@@ -41,7 +41,25 @@ Responde SOLO con JSON válido, sin markdown.
     const text = result.response.text().replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(text);
 
-    return NextResponse.json(parsed);
+    // Guardar análisis en BD si se proporciona hotelId
+    let analisisGuardado = null;
+    if (hotelId) {
+      analisisGuardado = await prisma.analysis.create({
+        data: {
+          hotelId: parseInt(hotelId),
+          estrategia: parsed.estrategia,
+          anuncio: parsed.anuncio,
+          segmentoObjeto: parsed.segmentoObjeto,
+          diferencadores: parsed.diferenciate,
+          recomendaciones: JSON.stringify(parsed.recomendaciones),
+        },
+      });
+    }
+
+    return NextResponse.json({
+      ...parsed,
+      analisisId: analisisGuardado?.id,
+    });
   } catch (error) {
     console.error("Error en /api/analyze:", error);
     return NextResponse.json(
