@@ -162,6 +162,12 @@ export default function Home() {
       {/* Footer - Acceso a Servicios */}
       <footer className="mt-20 pt-10 border-t border-slate-700 flex gap-4 justify-center">
         <a
+          href="/stats"
+          className="bg-purple-600 hover:bg-purple-500 px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-purple-500/20"
+        >
+          📊 Ver Estadísticas
+        </a>
+        <a
           href="/amenities"
           className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-green-500/20"
         >

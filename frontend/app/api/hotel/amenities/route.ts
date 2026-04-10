@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const { hotelId, ...amenities } = data;
+    const { hotelId, notasAdicionales, ...amenities } = data;
 
     // Verificar que el hotel existe
     const hotel = await prisma.hotel.findUnique({
@@ -20,13 +20,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Construir objeto de amenities con solo los campos válidos
+    const validAmenities: any = {
+      piscina: amenities.piscina || false,
+      pistasTenis: amenities.pistasTenis || false,
+      padel: amenities.padel || false,
+      gimnasio: amenities.gimnasio || false,
+      restaurante: amenities.restaurante || false,
+      bar: amenities.bar || false,
+      spa: amenities.spa || false,
+      sauna: amenities.sauna || false,
+      buffet: amenities.buffet || false,
+      wifiGratis: amenities.wifiGratis || false,
+      estacionamientoGratis: amenities.estacionamientoGratis || false,
+      habitacionesVIP: amenities.habitacionesVIP || false,
+      permiteMascotas: amenities.permiteMascotas || false,
+      salaJuegos: amenities.salaJuegos || false,
+      guarderia: amenities.guarderia || false,
+      accesibilidad: amenities.accesibilidad || false,
+      idiomas: amenities.idiomas || false,
+      actividades: amenities.actividades || false,
+      sitioFumar: amenities.sitioFumar || false,
+      earlyCheckin: amenities.earlyCheckin || false,
+      lateCheckin: amenities.lateCheckin || false,
+      notasAdicionales: notasAdicionales || null,
+    };
+
     // Guardar o actualizar amenities
     const result = await prisma.hotelAmenities.upsert({
       where: { hotelId },
-      update: amenities,
+      update: validAmenities,
       create: {
         hotelId,
-        ...amenities,
+        ...validAmenities,
       },
     });
 
