@@ -3,177 +3,154 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface OracleResult {
+  nombre: string;
+  descripcion: string;
   estrategia: string;
-  anuncio: string;
+  coste: string;
+  tiempo: string;
   targeting: string;
   roi: string;
-  analisisId?: number;
+  tipo: string;
 }
-
-const MODULOS = [
-  { id: "shadow_competitor", label: "🕵️ Shadow Competitor", desc: "Detecta oportunidades frente a la competencia" },
-  { id: "simulador",         label: "🔮 Simulador de Realidades", desc: "Proyecta el ROI de tus decisiones" },
-  { id: "autopilot",         label: "🚀 Creative Autopilot", desc: "Genera campañas listas para lanzar" },
-];
 
 export default function Home() {
   const [hotelName, setHotelName] = useState<string | null>(null);
   const [hotelId, setHotelId] = useState<number | null>(null);
-  const [data, setData] = useState<OracleResult | null>(null);
+  const [results, setResults] = useState<OracleResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [moduloActivo, setModuloActivo] = useState("shadow_competitor");
+  const [selected, setSelected] = useState<OracleResult | null>(null);
   const router = useRouter();
 
-  // Verificar si está logueado
   useEffect(() => {
     const storedHotelId = localStorage.getItem("hotelId");
     const storedHotelName = localStorage.getItem("hotelName");
-
-    if (!storedHotelId) {
-      router.push("/login");
-      return;
-    }
-
+    if (!storedHotelId) { router.push("/login"); return; }
     setHotelId(parseInt(storedHotelId));
     setHotelName(storedHotelName || "Hotel");
   }, [router]);
 
-  const ejecutarIA = async () => {
+  const ejecutarAnalisisCompleto = async () => {
     setLoading(true);
-    setError(null);
-    setData(null);
+    setResults([]);
+
+    const prompts = [
+      { t: "Corto Plazo", p: "Estrategia de Revenue Management para subir ADR inmediato." },
+      { t: "Corto Plazo", p: "Estrategia de Experiencia de Cliente para mejorar reseñas." },
+      { t: "Largo Plazo", p: "Plan de Transformación Digital e IA a 12 meses." },
+      { t: "Largo Plazo", p: "Estrategia de Sostenibilidad y Marca Premium a 2 años." }
+    ];
+
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          modulo: moduloActivo,
-          hotelId: hotelId,
-          datosHotel: { nombre: hotelName },
-          reseñasCompetencia: [],
-        }),
-      });
-      if (!res.ok) throw new Error("Error en la API");
-      const result = await res.json();
-      if (result.error) throw new Error(result.error);
-      setData(result);
+      for (const item of prompts) {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: item.p,
+            hotelId: hotelId,
+            tipo: item.t,
+            datosHotel: { nombre: hotelName }
+          }),
+        });
+        const result = await res.json();
+        setResults(prev => [...prev, { ...result, tipo: item.t }]);
+      }
     } catch (e) {
-      setError("No se pudo conectar con ORACLE. Revisa tu API key.");
+      console.error("Error cargando estrategias");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("hotelId");
-    localStorage.removeItem("hotelName");
-    router.push("/login");
-  };
-
-  // No renderizar nada hasta verificar login
-  if (!hotelId) {
-    return null;
-  }
+  if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-8">
-      {/* Header con info del hotel y logout */}
-      <header className="mb-10">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-4xl font-extrabold text-blue-400">ORACLE AI 🏨</h1>
-            <p className="text-slate-400">Motor de Decisiones de Marketing — IMPACTHON26</p>
-            <p className="text-sm text-slate-500 mt-2">
-              Conectado: <span className="text-emerald-400 font-bold">{hotelName}</span>
-            </p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
-          >
-            🚪 Logout
-          </button>
+    <div className="min-h-screen bg-slate-950 text-white p-8 flex flex-col items-center">
+      <header className="w-full max-w-6xl flex justify-between items-center mb-12">
+        <div>
+          <h1 className="text-3xl font-black text-blue-500 italic tracking-tighter">ORACLE AI</h1>
+          <p className="text-slate-500 text-xs uppercase tracking-widest">Connected: {hotelName}</p>
         </div>
+        <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="text-slate-500 hover:text-red-400 text-sm transition-colors">Cerrar Sesión</button>
       </header>
 
-      {/* Selector de módulos */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {MODULOS.map((m) => (
+      {results.length === 0 && !loading && (
+        <div className="my-auto text-center">
+          <h2 className="text-4xl font-bold mb-6 text-slate-200">¿Preparado para optimizar {hotelName}?</h2>
           <button
-            key={m.id}
-            onClick={() => setModuloActivo(m.id)}
-            className={`p-4 rounded-2xl border text-left transition-all ${
-              moduloActivo === m.id
-                ? "border-blue-500 bg-blue-500/20 text-white"
-                : "border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500"
-            }`}
+            onClick={ejecutarAnalisisCompleto}
+            className="bg-blue-600 hover:bg-blue-500 px-12 py-5 rounded-2xl font-black text-xl transition-all shadow-2xl shadow-blue-500/20 active:scale-95"
           >
-            <div className="font-bold">{m.label}</div>
-            <div className="text-sm mt-1 opacity-70">{m.desc}</div>
+            ⚡ LANZAR DIAGNÓSTICO MAESTRO
+          </button>
+        </div>
+      )}
+
+      {loading && results.length < 4 && (
+        <div className="my-auto flex flex-col items-center animate-pulse">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIAS: {results.length}/4</p>
+        </div>
+      )}
+
+      {/* Grid de Resultados */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl my-auto">
+        {results.map((res, i) => (
+          <button
+            key={i}
+            onClick={() => setSelected(res)}
+            className="bg-slate-900 border border-slate-800 p-6 rounded-3xl hover:border-blue-500/50 hover:bg-slate-800/80 transition-all text-left flex flex-col justify-between h-56 shadow-xl group"
+          >
+            <div>
+              <span className={`text-[10px] font-black px-3 py-1 rounded-full mb-3 inline-block uppercase ${res.tipo.includes("Corto") ? "bg-cyan-500/10 text-cyan-400" : "bg-purple-500/10 text-purple-400"}`}>
+                {res.tipo}
+              </span>
+              <h2 className="font-bold text-lg text-white group-hover:text-blue-400 leading-tight uppercase italic">{res.nombre}</h2>
+            </div>
+            <p className="text-sm text-slate-500 line-clamp-2">{res.descripcion}</p>
           </button>
         ))}
       </div>
 
-      {/* Botón ejecutar */}
-      <button
-        onClick={ejecutarIA}
-        disabled={loading}
-        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20"
-      >
-        {loading ? "⏳ Analizando datos reales..." : "⚡ Ejecutar ORACLE"}
-      </button>
+      {/* Popup / Modal */}
+      {selected && (
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl relative">
+            <button onClick={() => setSelected(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl">✕</button>
+            <span className="text-blue-500 font-mono text-xs font-bold uppercase tracking-[0.3em]">{selected.tipo}</span>
+            <h2 className="text-4xl font-black mb-6 italic uppercase">{selected.nombre}</h2>
 
-      {error && (
-        <div className="mt-6 bg-red-900/40 border border-red-500 p-4 rounded-xl text-red-300">
-          ⚠️ {error}
+            <div className="space-y-8">
+              <section>
+                <h3 className="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Hoja de Ruta</h3>
+                <p className="text-slate-200 text-lg leading-relaxed">{selected.estrategia}</p>
+              </section>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
+                  <h3 className="text-orange-400 text-[10px] font-bold uppercase mb-1">Presupuesto</h3>
+                  <p className="text-xl font-bold">{selected.coste}</p>
+                </div>
+                <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
+                  <h3 className="text-emerald-400 text-[10px] font-bold uppercase mb-1">Implementación</h3>
+                  <p className="text-xl font-bold">{selected.tiempo}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
+                <div>
+                  <h3 className="text-blue-400 text-[10px] font-bold uppercase">ROI Proyectado</h3>
+                  <p className="text-3xl font-black text-blue-400">{selected.roi}</p>
+                </div>
+                <div className="text-right">
+                  <h3 className="text-slate-500 text-[10px] font-bold uppercase">Target</h3>
+                  <p className="text-sm text-slate-300">{selected.targeting}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Resultados */}
-      {data && (
-        <div className="mt-10 grid gap-6">
-          <div className="bg-slate-800 p-6 rounded-2xl border border-blue-500/50">
-            <h2 className="text-blue-400 font-bold mb-2">🎯 ESTRATEGIA RECOMENDADA</h2>
-            <p className="text-lg">{data.estrategia}</p>
-          </div>
-          <div className="bg-slate-800 p-6 rounded-2xl border border-pink-500/50">
-            <h2 className="text-pink-400 font-bold mb-2">📸 COPY PARA REDES</h2>
-            <p className="italic text-lg">"{data.anuncio}"</p>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-slate-800 p-6 rounded-2xl border border-green-500/50">
-              <h2 className="text-green-400 font-bold mb-2">🎯 TARGETING</h2>
-              <p>{data.targeting}</p>
-            </div>
-            <div className="bg-slate-800 p-6 rounded-2xl border border-yellow-500/50">
-              <h2 className="text-yellow-400 font-bold mb-2">📈 ROI PROYECTADO</h2>
-              <p>{data.roi}</p>
-            </div>
-          </div>
-          {data.analisisId && (
-            <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-center text-sm text-slate-400">
-              ✓ Análisis guardado (ID: {data.analisisId})
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Footer - Acceso a Servicios */}
-      <footer className="mt-20 pt-10 border-t border-slate-700 flex gap-4 justify-center">
-        <a
-          href="/stats"
-          className="bg-purple-600 hover:bg-purple-500 px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-purple-500/20"
-        >
-          📊 Ver Estadísticas
-        </a>
-        <a
-          href="/amenities"
-          className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-full font-bold transition-all shadow-lg shadow-green-500/20"
-        >
-          📋 Gestionar Servicios
-        </a>
-      </footer>
     </div>
   );
 }

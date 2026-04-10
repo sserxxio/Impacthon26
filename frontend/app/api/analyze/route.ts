@@ -7,72 +7,44 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
-    const { datosHotel, reseñasCompetencia, hotelId } = await req.json();
+    const { prompt: userPrompt, datosHotel, hotelId } = await req.json();
 
-    // Obtener datos de la BD
-    const clientes = await prisma.customer.findMany({ take: 50 });
-    const hoteles = await prisma.hotel.findMany({ take: 10 });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash-latest",
+      systemInstruction: `Eres un consultor senior de revenue y marketing hotelero.
+      Tu salida DEBE SER UNICAMENTE UN JSON con este formato:
+      {
+        "nombre": "Nombre corto (3-5 palabras)",
+        "descripcion": "Resumen de 1 frase",
+        "estrategia": "Detalle técnico de la mejora",
+        "coste": "Estimación en €",
+        "tiempo": "Plazo de ejecución",
+        "targeting": "Público objetivo",
+        "roi": "Porcentaje esperado"
+      }`
+    });
 
-    // Construir prompt
-    const prompt = `
-Eres un experto en marketing hotelero. Analiza los siguientes datos y proporciona estrategias de marketing predictivo.
+    const fullPrompt = `Analiza para el hotel ${datosHotel?.nombre || 'genérico'}: ${userPrompt}`;
 
-DATOS DEL HOTEL:
-${JSON.stringify(datosHotel, null, 2)}
-
-RESEÑAS DE LA COMPETENCIA:
-${JSON.stringify(reseñasCompetencia, null, 2)}
-
-DATOS DE CLIENTES (MUESTRA):
-${JSON.stringify(clientes.slice(0, 5), null, 2)}
-
-Por favor, genere un JSON con:
-1. estrategia: Estrategia de marketing recomendada
-2. anuncio: Copy para redes sociales
-3. segmentoObjeto: Segmento de cliente objetivo
-4. diferenciate: Diferenciadores clave
-5. recomendaciones: Array de recomendaciones de mejora
-
-Responde SOLO con JSON válido, sin markdown.
-`;
-
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent(fullPrompt);
     const text = result.response.text().replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(text);
 
-    // Guardar análisis en BD si se proporciona hotelId
-    let analisisGuardado = null;
+    // Guardar en BD opcionalmente (puedes ajustar los campos de tu Prisma aquí)
     if (hotelId) {
-      analisisGuardado = await prisma.analysis.create({
+      await prisma.analysis.create({
         data: {
           hotelId: parseInt(hotelId),
           estrategia: parsed.estrategia,
-          anuncio: parsed.anuncio,
-          segmentoObjeto: parsed.segmentoObjeto,
-          diferencadores: parsed.diferenciate,
-          recomendaciones: JSON.stringify(parsed.recomendaciones),
+          segmentoObjeto: parsed.targeting,
+          // Ajusta según tu esquema de base de datos
         },
-      });
+      }).catch(e => console.error("Error guardando en BD:", e));
     }
 
-    return NextResponse.json({
-      ...parsed,
-      analisisId: analisisGuardado?.id,
-    });
+    return NextResponse.json(parsed);
   } catch (error) {
-    console.error("Error en /api/analyze:", error);
-    return NextResponse.json(
-      {
-        error: "Error al procesar",
-        estrategia: "Estrategia de contingencia",
-        anuncio: "Descubre nuestro hotel único con Spa y servicio para mascotas",
-        segmentoObjeto: "Viajeros con mascotas",
-        diferenciate: ["Spa de lujo", "Acepta mascotas", "WiFi de calidad"],
-        medidas_accion: ["Marketing en redes", "Alianzas con agencias de viajes",
-        ],
-      },
-      { status: 500 }
-    );
+    console.error("Error API:", error);
+    return NextResponse.json({ error: "Error de conexión" }, { status: 500 });
   }
 }
