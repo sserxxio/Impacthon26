@@ -57,6 +57,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           >
               Estadísticas
           </button>
+
+          <button
+            onClick={() => router.push("/competition")}
+            className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition-all bg-purple-700 text-purple-100 hover:bg-purple-600`}
+          >
+              🏆 Competencia
+          </button>
         </nav>
 
         {/* Botones de Acción */}

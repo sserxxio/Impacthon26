@@ -221,7 +221,7 @@ export default function LoginPage() {
                 onClick={() => setShowCreateForm(true)}
                 className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-blue-500/20"
               >
-                ➕ Crear Nuevo Hotel
+                 Crear Nuevo Hotel
               </button>
             </div>
           </div>
