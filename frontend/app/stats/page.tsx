@@ -254,7 +254,7 @@ export default function StatsPage() {
                 <p className="text-[#ae8d6e] text-sm uppercase tracking-wide mb-2">
                   ROI Promedio
                 </p>
-                <p className="text-3xl font-bold text-[#ae8d6e]">
+                <p className="text-3xl font-bold text-[#683110]">
                   {summary.avgRoi}%
                 </p>
               </div>
@@ -766,7 +766,7 @@ export default function StatsPage() {
                 {analysis.proyeccion_siguiente_trimestre && (
                   <div className="bg-white border border-[#ae8d6e]/30 p-6 rounded-2xl">
                     <h3 className="text-[#c50000] font-bold mb-3">
-                      🔮 Proyección Siguiente Trimestre
+                      Proyección Siguiente Trimestre
                     </h3>
                     <p className="text-[#5e0710] leading-relaxed">
                       {analysis.proyeccion_siguiente_trimestre}
