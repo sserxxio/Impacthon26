@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import {
   BarChart,
@@ -132,10 +133,10 @@ export default function CompetitionPage() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <Header hotelName={hotelName} />
-
-      <main className="p-8 max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-900 text-white flex">
+      <Sidebar />
+      <main className="flex-1 pb-12 p-8 max-w-6xl mx-auto space-y-8">
+        <Header hotelName={hotelName} />
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-8 rounded-2xl border border-purple-500/30">
           <h1 className="text-4xl font-bold mb-2">🏆 Análisis de Competencia</h1>
           <p className="text-purple-100">
