@@ -147,7 +147,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8">
       <header className="mb-16 text-center">
         <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">
-          ORACLE AI 🏨
+          Velvet
         </h1>
         <p className="text-xl text-slate-300">
           Motor de Decisiones de Marketing — IMPACTHON26
@@ -423,7 +423,7 @@ export default function LoginPage() {
 
       {/* Footer */}
       <footer className="mt-20 text-center text-slate-500 text-sm">
-        <p>© 2026 ORACLE AI - Powered by Impacthon26</p>
+        <p>© 2026 Velvet - Powered by Impacthon26</p>
       </footer>
     </div>
   );
