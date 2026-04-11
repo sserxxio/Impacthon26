@@ -4,75 +4,87 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-interface Amenities {
+interface Statistics {
   id: number;
   hotelId: number;
-  piscina: boolean;
-  pistasTenis: boolean;
-  padel: boolean;
-  gimnasio: boolean;
-  restaurante: boolean;
-  bar: boolean;
-  spa: boolean;
-  sauna: boolean;
-  buffet: boolean;
-  wifiGratis: boolean;
-  estacionamientoGratis: boolean;
-  habitacionesVIP: boolean;
-  permiteMascotas: boolean;
-  salaJuegos: boolean;
-  guarderia: boolean;
-  accesibilidad: boolean;
-  idiomas: boolean;
-  actividades: boolean;
-  sitioFumar: boolean;
-  earlyCheckin: boolean;
-  lateCheckin: boolean;
-  notasAdicionales?: string;
+  month: number;
+  year: number;
+  ingresos: number;
+  costes: number;
+  marketingGasto: number;
+  utilidad: number;
+  roi: number;
+  ocupacion: number;
+  adr: number;
+  reservas: number;
+  huespedes: number;
+  puntuacion: number;
+  resenas: number;
+  monthName?: string;
 }
 
-interface AnalysisResult {
-  estrategia: string;
-  anuncio: string;
-  targeting?: string;
-  roi?: string;
-  analisisId?: number;
+interface Summary {
+  avgIngresos: number;
+  avgOcupacion: number;
+  avgRoi: number;
+  totalUtilidad: number;
+  bestMonth: Statistics;
 }
 
-const STATS: Stat[] = [
-  { key: "piscina", label: "Piscina", emoji: "🏊" },
-  { key: "pistasTenis", label: "Pistas de Tenis", emoji: "🎾" },
-  { key: "padel", label: "Pádel", emoji: "🏐" },
-  { key: "gimnasio", label: "Gimnasio", emoji: "💪" },
-  { key: "restaurante", label: "Restaurante", emoji: "🍽️" },
-  { key: "bar", label: "Bar", emoji: "🍸" },
-  { key: "buffet", label: "Buffet", emoji: "🥘" },
-  { key: "spa", label: "Spa", emoji: "💆" },
-  { key: "sauna", label: "Sauna", emoji: "🔥" },
-  { key: "wifiGratis", label: "WiFi Gratis", emoji: "📶" },
-  { key: "estacionamientoGratis", label: "Estacionamiento Gratis", emoji: "🅿️" },
-  { key: "habitacionesVIP", label: "Habitaciones VIP", emoji: "👑" },
-  { key: "permiteMascotas", label: "Pet-Friendly", emoji: "🐾" },
-  { key: "salaJuegos", label: "Sala de Juegos", emoji: "🎮" },
-  { key: "guarderia", label: "Guardería", emoji: "👶" },
-  { key: "accesibilidad", label: "Accesibilidad", emoji: "♿" },
-  { key: "idiomas", label: "Múltiples Idiomas", emoji: "🌍" },
-  { key: "actividades", label: "Actividades & Eventos", emoji: "🎪" },
-  { key: "sitioFumar", label: "Zona para Fumar", emoji: "🚬" },
-  { key: "earlyCheckin", label: "Early Check-in", emoji: "🌅" },
-  { key: "lateCheckin", label: "Late Check-in", emoji: "🌙" },
+interface Analysis {
+  tendencia_general?: string;
+  fortalezas?: string[];
+  debilidades?: string[];
+  oportunidades?: string[];
+  amenazas?: string[];
+  recomendaciones_clave?: Array<{
+    titulo: string;
+    descripcion: string;
+    impacto_estimado: string;
+  }>;
+  proyeccion_siguiente_trimestre?: string;
+  raw?: string;
+}
+
+const monthNames = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 export default function StatsPage() {
   const [hotelName, setHotelName] = useState<string | null>(null);
   const [hotelId, setHotelId] = useState<number | null>(null);
-  const [amenities, setAmenities] = useState<Amenities | null>(null);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [statsData, setStatsData] = useState<Statistics[]>([]);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingAnalysis, setGeneratingAnalysis] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"analisis" | "gestionar" | "crear">("analisis");
   const router = useRouter();
 
   useEffect(() => {
@@ -84,60 +96,65 @@ export default function StatsPage() {
       return;
     }
 
-    setHotelId(parseInt(storedHotelId));
+    const parsedId = parseInt(storedHotelId);
+    setHotelId(parsedId);
     setHotelName(storedHotelName || "Hotel");
 
-    // Cargar amenities
-    const loadAmenities = async () => {
-      try {
-        const res = await fetch(`/api/hotel/amenities?hotelId=${storedHotelId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setAmenities(data);
-          // Generar análisis automáticamente
-          await generateAnalysis(parseInt(storedHotelId), data);
-        } else {
-          setError("No hay servicios registrados aún");
-          setLoading(false);
-        }
-      } catch (err) {
-        setError("Error al cargar los servicios");
-        setLoading(false);
-      }
-    };
-
-    loadAmenities();
+    loadStatistics(parsedId);
   }, [router]);
 
-  const generateAnalysis = async (hotelId: number, amenitiesData: Amenities) => {
+  const loadStatistics = async (id: number) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/statistics?hotelId=${id}&months=12`);
+      
+      if (!res.ok) {
+        // Si es 404, significa que el hotel no existe - redirigir al login
+        if (res.status === 404) {
+          localStorage.removeItem("hotelId");
+          localStorage.removeItem("hotelName");
+          router.push("/login");
+          return;
+        }
+        throw new Error("Error cargando estadísticas");
+      }
+
+      const data = await res.json();
+      
+      const statsConMeses = (data.stats || []).map((st: Statistics) => ({
+        ...st,
+        monthName: `${monthNames[st.month - 1]} ${st.year}`,
+      }));
+
+      setStatsData(statsConMeses);
+      setSummary(data.summary);
+
+      await generateAnalysis(id);
+    } catch (err) {
+      setError("Error al cargar estadísticas");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateAnalysis = async (id: number) => {
     setGeneratingAnalysis(true);
     try {
-      const enabledServices = STATS.filter((stat) => amenitiesData[stat.key])
-        .map((s) => s.label)
-        .join(", ");
-
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("/api/statistics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          hotelId,
-          datosHotel: {
-            nombre: hotelName,
-            servicios: enabledServices,
-          },
-          reseñasCompetencia: [],
-        }),
+        body: JSON.stringify({ hotelId: id }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setAnalysis(data);
-      }
+      if (!res.ok) throw new Error("Error generando análisis");
+
+      const data = await res.json();
+      setAnalysis(data.analysis || {});
     } catch (err) {
-      console.error("Error generando análisis:", err);
+      console.error("Error en análisis:", err);
     } finally {
       setGeneratingAnalysis(false);
-      setLoading(false);
     }
   };
 
@@ -146,226 +163,354 @@ export default function StatsPage() {
       <div className="min-h-screen bg-slate-900 text-white p-8 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-12 w-12 border-4 border-blue-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Cargando estadísticas...</p>
+          <p className="text-xl">Cargando estadísticas...</p>
         </div>
       </div>
     );
   }
 
-  if (!hotelId) {
+  if (!hotelId || !summary) {
     return null;
   }
 
-  const enabledServices = amenities
-    ? STATS.filter((stat) => amenities[stat.key]).length
-    : 0;
-
   return (
     <div className="min-h-screen bg-slate-900 text-white flex">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <main className="flex-1 p-8">
+      <Sidebar />
+      <main className="flex-1 pb-12">
         <Header hotelName={hotelName} />
 
         {error && (
-          <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-200 p-4 rounded-xl mb-6">
+          <div className="mx-8 bg-red-500/20 border border-red-500 text-red-200 p-4 rounded-xl mb-6">
             ⚠️ {error}
           </div>
         )}
 
-        {amenities ? (
-          <>
-            {activeTab === "analisis" && (
-              <>
-                {/* Resumen */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  <div className="bg-emerald-500/20 border border-emerald-500 p-6 rounded-2xl">
-                    <h3 className="text-emerald-400 font-bold text-sm mb-1">SERVICIOS ACTIVOS</h3>
-                    <p className="text-4xl font-bold text-emerald-300">{enabledServices}</p>
-                    <p className="text-sm text-slate-400 mt-2">de {STATS.length} totales</p>
-                  </div>
-                  <div className="bg-blue-500/20 border border-blue-500 p-6 rounded-2xl">
-                    <h3 className="text-blue-400 font-bold text-sm mb-1">COBERTURA</h3>
-                    <p className="text-4xl font-bold text-blue-300">
-                      {Math.round((enabledServices / STATS.length) * 100)}%
-                    </p>
-                    <p className="text-sm text-slate-400 mt-2">del catálogo completo</p>
-                  </div>
-                  <div className="bg-purple-500/20 border border-purple-500 p-6 rounded-2xl">
-                    <h3 className="text-purple-400 font-bold text-sm mb-1">ESTADO</h3>
-                    <p className="text-2xl font-bold text-purple-300 mt-2">✅ {generatingAnalysis ? "Analizando..." : "Analizado"}</p>
-                  </div>
+        {/* KPI Cards */}
+        <div className="mx-8 grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl">
+            <p className="text-slate-400 text-sm uppercase tracking-wide mb-2">
+              Ingresos Promedio
+            </p>
+            <p className="text-3xl font-bold text-blue-400">
+              €{summary.avgIngresos.toLocaleString("es-ES")}
+            </p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl">
+            <p className="text-slate-400 text-sm uppercase tracking-wide mb-2">
+              Ocupación Promedio
+            </p>
+            <p className="text-3xl font-bold text-green-400">
+              {summary.avgOcupacion}%
+            </p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl">
+            <p className="text-slate-400 text-sm uppercase tracking-wide mb-2">
+              ROI Promedio
+            </p>
+            <p className="text-3xl font-bold text-purple-400">
+              {summary.avgRoi}%
+            </p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-xl">
+            <p className="text-slate-400 text-sm uppercase tracking-wide mb-2">
+              Utilidad Total
+            </p>
+            <p className="text-3xl font-bold text-emerald-400">
+              €{summary.totalUtilidad.toLocaleString("es-ES")}
+            </p>
+          </div>
+        </div>
+
+        {/* Gráficos */}
+        <div className="mx-8 space-y-8 mb-8">
+          {/* Gráfico de Ingresos vs Costes */}
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+            <h3 className="text-xl font-bold text-blue-400 mb-6">
+              💰 Ingresos vs Costes Operacionales
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={statsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis dataKey="monthName" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1e293b",
+                    border: "1px solid #475569",
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="ingresos" fill="#3b82f6" name="Ingresos (€)" />
+                <Bar dataKey="costes" fill="#ef4444" name="Costes (€)" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Gráfico de Ocupación */}
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+            <h3 className="text-xl font-bold text-green-400 mb-6">
+              🏨 Ocupación vs ADR
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={statsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis dataKey="monthName" stroke="#94a3b8" />
+                <YAxis yAxisId="left" stroke="#94a3b8" />
+                <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1e293b",
+                    border: "1px solid #475569",
+                  }}
+                />
+                <Legend />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="ocupacion"
+                  fill="#10b981"
+                  stroke="#10b981"
+                  name="Ocupación (%)"
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="adr"
+                  stroke="#f59e0b"
+                  name="ADR (€)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Gráfico de ROI y Utilidad */}
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+            <h3 className="text-xl font-bold text-purple-400 mb-6">
+              📈 ROI vs Utilidad
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={statsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis dataKey="monthName" stroke="#94a3b8" />
+                <YAxis yAxisId="left" stroke="#94a3b8" />
+                <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1e293b",
+                    border: "1px solid #475569",
+                  }}
+                />
+                <Legend />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="roi"
+                  stroke="#8b5cf6"
+                  name="ROI (%)"
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="utilidad"
+                  stroke="#06b6d4"
+                  name="Utilidad (€)"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Gráfico de Puntuación vs Reseñas */}
+          <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+            <h3 className="text-xl font-bold text-pink-400 mb-6">
+              ⭐ Puntuación vs Reseñas
+            </h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={statsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                <XAxis dataKey="monthName" stroke="#94a3b8" />
+                <YAxis yAxisId="left" stroke="#94a3b8" />
+                <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1e293b",
+                    border: "1px solid #475569",
+                  }}
+                />
+                <Legend />
+                <Line
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="puntuacion"
+                  stroke="#ec4899"
+                  name="Puntuación"
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="resenas"
+                  stroke="#f97316"
+                  name="Reseñas"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Análisis IA */}
+        {analysis ? (
+          <div className="mx-8 mb-8">
+            <h2 className="text-3xl font-bold text-blue-400 mb-6">
+              🤖 Análisis IA Generado
+            </h2>
+
+            {analysis.tendencia_general && (
+              <div className="bg-slate-800 border border-blue-500/50 p-6 rounded-2xl mb-6">
+                <h3 className="text-blue-400 font-bold mb-3">📊 Tendencia General</h3>
+                <p className="text-slate-200 leading-relaxed">
+                  {analysis.tendencia_general}
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {analysis.fortalezas && analysis.fortalezas.length > 0 && (
+                <div className="bg-emerald-500/10 border border-emerald-500/50 p-6 rounded-2xl">
+                  <h3 className="text-emerald-400 font-bold mb-3">💪 Fortalezas</h3>
+                  <ul className="space-y-2">
+                    {analysis.fortalezas.map((f, i) => (
+                      <li key={i} className="text-slate-300 flex items-start gap-2">
+                        <span className="text-emerald-400 mt-1">✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                {/* ANÁLISIS IA */}
-                {analysis ? (
-                  <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-blue-400 mb-6">🤖 Análisis IA Generado</h2>
-                    <div className="grid gap-6">
-                      <div className="bg-slate-800 p-6 rounded-2xl border border-blue-500/50">
-                        <h3 className="text-blue-400 font-bold mb-3">🎯 ESTRATEGIA RECOMENDADA</h3>
-                        <p className="text-lg text-slate-200 leading-relaxed">{analysis.estrategia}</p>
-                      </div>
-                      <div className="bg-slate-800 p-6 rounded-2xl border border-pink-500/50">
-                        <h3 className="text-pink-400 font-bold mb-3">📸 COPY PARA REDES SOCIALES</h3>
-                        <p className="text-lg italic text-slate-200">"{analysis.anuncio}"</p>
-                      </div>
-                      {analysis.targeting && (
-                        <div className="bg-slate-800 p-6 rounded-2xl border border-green-500/50">
-                          <h3 className="text-green-400 font-bold mb-3">🎯 TARGETING</h3>
-                          <p className="text-slate-200">{analysis.targeting}</p>
-                        </div>
-                      )}
-                      {analysis.roi && (
-                        <div className="bg-slate-800 p-6 rounded-2xl border border-yellow-500/50">
-                          <h3 className="text-yellow-400 font-bold mb-3">📈 ROI PROYECTADO</h3>
-                          <p className="text-slate-200">{analysis.roi}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : generatingAnalysis ? (
-                  <div className="mb-8 bg-slate-800 p-8 rounded-2xl border border-blue-500/50 text-center">
-                    <div className="inline-block animate-spin h-8 w-8 border-4 border-blue-400 border-t-transparent rounded-full mb-4"></div>
-                    <p className="text-blue-400 font-bold">Generando análisis con IA...</p>
-                  </div>
-                ) : null}
+              {analysis.debilidades && analysis.debilidades.length > 0 && (
+                <div className="bg-red-500/10 border border-red-500/50 p-6 rounded-2xl">
+                  <h3 className="text-red-400 font-bold mb-3">⚠️ Debilidades</h3>
+                  <ul className="space-y-2">
+                    {analysis.debilidades.map((d, i) => (
+                      <li key={i} className="text-slate-300 flex items-start gap-2">
+                        <span className="text-red-400 mt-1">×</span>
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-                {/* Servicios Habilitados */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-green-400 mb-4">✅ Servicios Habilitados</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {STATS.filter((stat) => amenities[stat.key]).map((stat) => (
+              {analysis.oportunidades && analysis.oportunidades.length > 0 && (
+                <div className="bg-yellow-500/10 border border-yellow-500/50 p-6 rounded-2xl">
+                  <h3 className="text-yellow-400 font-bold mb-3">🎯 Oportunidades</h3>
+                  <ul className="space-y-2">
+                    {analysis.oportunidades.map((o, i) => (
+                      <li key={i} className="text-slate-300 flex items-start gap-2">
+                        <span className="text-yellow-400 mt-1">→</span>
+                        {o}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {analysis.amenazas && analysis.amenazas.length > 0 && (
+                <div className="bg-purple-500/10 border border-purple-500/50 p-6 rounded-2xl">
+                  <h3 className="text-purple-400 font-bold mb-3">⚡ Amenazas</h3>
+                  <ul className="space-y-2">
+                    {analysis.amenazas.map((a, i) => (
+                      <li key={i} className="text-slate-300 flex items-start gap-2">
+                        <span className="text-purple-400 mt-1">!</span>
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {analysis.recomendaciones_clave &&
+              analysis.recomendaciones_clave.length > 0 && (
+                <div className="bg-slate-800 border border-cyan-500/50 p-6 rounded-2xl mb-6">
+                  <h3 className="text-cyan-400 font-bold mb-4">
+                    💡 Recomendaciones Clave
+                  </h3>
+                  <div className="space-y-4">
+                    {analysis.recomendaciones_clave.map((rec, i) => (
                       <div
-                        key={stat.key}
-                        className="bg-emerald-500/10 border border-emerald-500/50 p-3 rounded-xl text-center"
+                        key={i}
+                        className="bg-slate-700 p-4 rounded-xl border border-cyan-500/30"
                       >
-                        <div className="text-3xl mb-2">{stat.emoji}</div>
-                        <p className="text-sm font-medium text-emerald-300">{stat.label}</p>
+                        <h4 className="text-cyan-300 font-semibold mb-2">
+                          {i + 1}. {rec.titulo}
+                        </h4>
+                        <p className="text-slate-300 text-sm mb-2">
+                          {rec.descripcion}
+                        </p>
+                        <p className="text-cyan-400 text-sm font-semibold">
+                          💰 Impacto: {rec.impacto_estimado}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
+              )}
 
-                {/* Servicios Deshabilitados */}
-                {STATS.filter((stat) => !amenities[stat.key]).length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-slate-400 mb-4">❌ Servicios No Habilitados</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {STATS.filter((stat) => !amenities[stat.key]).map((stat) => (
-                        <div
-                          key={stat.key}
-                          className="bg-slate-700/50 border border-slate-600 p-3 rounded-xl text-center opacity-60"
-                        >
-                          <div className="text-3xl mb-2 opacity-40">{stat.emoji}</div>
-                          <p className="text-sm font-medium text-slate-400">{stat.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {amenities.notasAdicionales && (
-                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
-                    <h3 className="text-blue-400 font-bold mb-3">📝 Notas Adicionales</h3>
-                    <p className="text-slate-300">{amenities.notasAdicionales}</p>
-                  </div>
-                )}
-
-                <div className="mt-8 flex gap-4">
-                  <button
-                    onClick={() => router.push("/amenities")}
-                    className="bg-yellow-600 hover:bg-yellow-500 px-6 py-3 rounded-full font-bold transition-all"
-                  >
-                    ✏️ Editar Servicios
-                  </button>
-                </div>
-              </>
-            )}
-
-            {activeTab === "gestionar" && (
-              <div className="bg-slate-800 border border-slate-700 p-8 rounded-2xl">
-                <h2 className="text-3xl font-bold text-blue-400 mb-6">⚙️ Gestionar Estrategia</h2>
-                <div className="space-y-4">
-                  <p className="text-slate-300 mb-4">Aquí puedes editar, pausar o eliminar estrategias creadas.</p>
-                  <div className="bg-slate-700 p-6 rounded-xl border border-slate-600">
-                    <p className="text-slate-400">Estrategias guardadas: <span className="text-blue-400 font-bold">0</span></p>
-                  </div>
-                  <p className="text-slate-400 text-sm">No hay estrategias guardadas aún. Crea una nueva para comenzar.</p>
-                </div>
+            {analysis.proyeccion_siguiente_trimestre && (
+              <div className="bg-slate-800 border border-lime-500/50 p-6 rounded-2xl">
+                <h3 className="text-lime-400 font-bold mb-3">
+                  🔮 Proyección Siguiente Trimestre
+                </h3>
+                <p className="text-slate-200 leading-relaxed">
+                  {analysis.proyeccion_siguiente_trimestre}
+                </p>
               </div>
             )}
+          </div>
+        ) : generatingAnalysis ? (
+          <div className="mx-8 bg-slate-800 p-8 rounded-2xl border border-blue-500/50 text-center">
+            <div className="inline-block animate-spin h-8 w-8 border-4 border-blue-400 border-t-transparent rounded-full mb-4"></div>
+            <p className="text-blue-400 font-bold">Generando análisis con IA...</p>
+          </div>
+        ) : null}
 
-            {activeTab === "crear" && (
-              <div className="bg-slate-800 border border-slate-700 p-8 rounded-2xl">
-                <h2 className="text-3xl font-bold text-emerald-400 mb-6">➕ Crear Nueva Estrategia</h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">
-                      Nombre de la Estrategia
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ej: Campaña Verano 2026"
-                      className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">
-                      Descripción
-                    </label>
-                    <textarea
-                      rows={4}
-                      placeholder="Describe tu estrategia de marketing..."
-                      className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none resize-none"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-2">
-                        Público Objetivo
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Ej: Viajeros de negocios"
-                        className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-2">
-                        Presupuesto (€)
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="Ej: 5000"
-                        className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <button className="flex-1 bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-full font-bold transition-all">
-                      ✅ Guardar Estrategia
-                    </button>
-                    <button className="flex-1 bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full font-bold transition-all">
-                      🤖 Generar con IA
-                    </button>
-                  </div>
-                </div>
+        {/* Mejor Mes */}
+        {summary.bestMonth && (
+          <div className="mx-8 bg-gradient-to-r from-blue-900 to-cyan-900 border border-cyan-500/50 p-8 rounded-2xl mb-8">
+            <h3 className="text-2xl font-bold text-cyan-400 mb-4">
+              🏆 Mejor Mes: {monthNames[summary.bestMonth.month - 1]}{" "}
+              {summary.bestMonth.year}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-slate-400 text-sm mb-1">Ingresos</p>
+                <p className="text-2xl font-bold text-blue-300">
+                  €{summary.bestMonth.ingresos.toLocaleString("es-ES")}
+                </p>
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-slate-400 mb-4">No hay servicios registrados</p>
-            <button
-              onClick={() => router.push("/amenities")}
-              className="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-full font-bold"
-            >
-              📋 Ir al Cuestionario
-            </button>
+              <div>
+                <p className="text-slate-400 text-sm mb-1">Utilidad</p>
+                <p className="text-2xl font-bold text-emerald-300">
+                  €{summary.bestMonth.utilidad.toLocaleString("es-ES")}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-sm mb-1">Ocupación</p>
+                <p className="text-2xl font-bold text-green-300">
+                  {summary.bestMonth.ocupacion}%
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-sm mb-1">ROI</p>
+                <p className="text-2xl font-bold text-purple-300">
+                  {summary.bestMonth.roi}%
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </main>

@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
+  },
   "dependencies": {
     "@google-cloud/vertexai": "^1.11.0",
     "@google/generative-ai": "^0.24.1",
@@ -23,7 +26,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "es-node": "^10",
+    "tslint-config-next": "16.2.3",
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
