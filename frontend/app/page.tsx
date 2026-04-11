@@ -241,7 +241,7 @@ export default function Home() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#683110] flex h-screen overflow-hidden">
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
@@ -270,7 +270,7 @@ export default function Home() {
                         loadingPhase === "PREDICIENDO" ? "Modelo Predictivo" : "Redactando Estrategia"}
                   </h2>
 
-                  <p className="text-[#ae8d6e] text-sm mb-8 font-medium h-5">
+                  <p className="text-[#683110] text-sm mb-8 font-medium h-5">
                     {loadingPhase === "LEYENDO" ? "Extrayendo KPIs y equipamiento del hotel..." :
                       loadingPhase === "ANALIZANDO" ? "Identificando patrones en el histórico..." :
                         loadingPhase === "PREDICIENDO" ? "Generando proyecciones para el corto plazo..." : "Finalizando tu propuesta maestra..."}
@@ -351,7 +351,7 @@ export default function Home() {
                           {res.tipo}
                         </span>
                         <h2 className="font-bold text-xl text-[#5e0710] group-hover:text-[#683110] leading-tight uppercase italic mb-2">{res.nombre}</h2>
-                        <p className="text-sm text-[#ae8d6e] line-clamp-2">{res.descripcion}</p>
+                        <p className="text-sm text-[#683110] line-clamp-2">{res.descripcion}</p>
                       </div>
                       <div className="mt-6 flex items-center text-[#5e0710] text-xs font-bold uppercase tracking-widest gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         Ver análisis completo ➔
@@ -375,22 +375,22 @@ export default function Home() {
 
                   <div className="space-y-10">
                     <section>
-                      <h3 className="text-[#ae8d6e]-500 text-[10px] font-bold uppercase mb-3 tracking-widest border-l-2 border-[#ae8d6e] pl-3">Hoja de Ruta</h3>
+                      <h3 className="text-[#683110]-500 text-[10px] font-bold uppercase mb-3 tracking-widest border-l-2 border-[#ae8d6e] pl-3">Hoja de Ruta</h3>
                       <MarkdownRenderer content={selected.estrategia} />
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
-                        <h3 className="text-[#ae8d6e] text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
+                        <h3 className="text-emerald-700 text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
                         <p className="text-xl font-bold text-[#5e0710]">{selected.coste}</p>
                       </div>
                       <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
-                        <h3 className="text-[#683110] text-[10px] font-bold uppercase mb-2 tracking-widest">Plazo de Implementación</h3>
+                        <h3 className="text-blue-800 text-[10px] font-bold uppercase mb-2 tracking-widest">Plazo de Implementación</h3>
                         <p className="text-xl font-bold text-[#5e0710]">{selected.tiempo}</p>
                       </div>
                       <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
-                        <h3 className="text-[#683110] text-[10px] font-bold uppercase mb-2 tracking-widest">ROI Proyectado</h3>
-                        <p className="text-xl font-bold text-[#ae8d6e]">{selected.roi}</p>
+                        <h3 className="text-amber-700 text-[10px] font-bold uppercase mb-2 tracking-widest">ROI Proyectado</h3>
+                        <p className="text-xl font-bold text-[#5e0710]">{selected.roi}</p>
                       </div>
                       <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
                         <h3 className="text-purple-900 text-[10px] font-bold uppercase mb-2 tracking-widest">Target de Mercado</h3>
@@ -402,7 +402,7 @@ export default function Home() {
                       onClick={() => iniciarEstrategia(selected)}
                       className="w-full mt-4 bg-[#c50000] hover:bg-[#c50000]/90 text-[#f5f4f1] font-black py-5 rounded-3xl transition-all shadow-lg shadow-[#c50000]/700/20 uppercase tracking-[0.2em] text-xl hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      🚀 Iniciar esta Estrategia
+                      Iniciar esta Estrategia
                     </button>
                   </div>
                 </div>

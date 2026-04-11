@@ -64,6 +64,13 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           >
             Competencia
           </button>
+
+          <button
+            onClick={() => router.push("/content")}
+            className={`w-full text-left px-4 py-3 rounded-lg font-bold transition-all border-2 border-[#683110] bg-[#f5f4f1] text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1]`}
+          >
+            Generador contenido
+          </button>
         </nav>
 
         {/* Botones de Acción */}
