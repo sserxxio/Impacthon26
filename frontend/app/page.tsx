@@ -129,6 +129,40 @@ export default function Home() {
 
   if (!hotelId) return null;
 
+  const strategies = [
+    { id: 1, tipo: "Corto Plazo", titulo: "Revenue Management", prompt: "Estrategia de Revenue Management para subir ADR inmediato." },
+    { id: 2, tipo: "Corto Plazo", titulo: "Experiencia de Cliente", prompt: "Estrategia de Experiencia de Cliente para mejorar reseñas." },
+    { id: 3, tipo: "Largo Plazo", titulo: "Transformación Digital", prompt: "Plan de Transformación Digital e IA a 12 meses." },
+    { id: 4, tipo: "Largo Plazo", titulo: "Sostenibilidad y Marca", prompt: "Estrategia de Sostenibilidad y Marca Premium a 2 años." }
+  ];
+
+  const handleGenerateStrategy = async (strategy: typeof strategies[0]) => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: strategy.prompt,
+          hotelId: hotelId,
+          tipo: strategy.tipo,
+          datosHotel: { nombre: hotelName }
+        }),
+      });
+      
+      if (res.ok) {
+        const result = await res.json();
+        router.push("/stats");
+      } else {
+        alert("Error generando estrategia");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8 pb-32 flex flex-col items-center relative">
       <header className="w-full max-w-6xl flex justify-between items-center mb-12">
