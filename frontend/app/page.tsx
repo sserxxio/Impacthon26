@@ -13,6 +13,7 @@ interface OracleResult {
   targeting: string;
   roi: string;
   tipo: string;
+  id?: string;
 }
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<OracleResult | null>(null);
   const [promptText, setPromptText] = useState("");
+  const [savedSessions, setSavedSessions] = useState<any[]>([]);
   const currentProcessId = useRef(0);
   const router = useRouter();
   const hasAutoRun = useRef(false);
@@ -29,11 +31,17 @@ export default function Home() {
   useEffect(() => {
     const storedHotelId = localStorage.getItem("hotelId");
     const storedHotelName = localStorage.getItem("hotelName");
+    const storedSessions = localStorage.getItem("saved_sessions");
+    
     if (!storedHotelId) { router.push("/login"); return; }
     
     const parsedId = parseInt(storedHotelId);
     setHotelId(parsedId);
     setHotelName(storedHotelName || "Hotel");
+
+    if (storedSessions) {
+      setSavedSessions(JSON.parse(storedSessions));
+    }
 
     if (!hasAutoRun.current) {
       hasAutoRun.current = true;
@@ -102,8 +110,26 @@ export default function Home() {
   };
 
   const iniciarEstrategia = (res: OracleResult) => {
-    localStorage.setItem("currentStrategy", JSON.stringify(res));
-    router.push("/strategy");
+    // Generar un ID único simple basado en el timestamp
+    const sessionId = Date.now().toString();
+    res.id = sessionId; 
+    
+    // Guardar los datos de esta estrategia concreta
+    localStorage.setItem(`strategy_${sessionId}`, JSON.stringify(res));
+    
+    // Añadir al índice de "Sesiones Guardadas"
+    const saved = JSON.parse(localStorage.getItem('saved_sessions') || '[]');
+    const newSession = { 
+      id: sessionId, 
+      nombre: res.nombre, 
+      tipo: res.tipo,
+      fecha: new Date().toLocaleDateString()
+    };
+    saved.push(newSession);
+    localStorage.setItem('saved_sessions', JSON.stringify(saved));
+    setSavedSessions(saved);
+
+    router.push(`/strategy/${sessionId}`);
   };
 
   const ejecutarConsultaCustom = async () => {
@@ -141,40 +167,6 @@ export default function Home() {
   };
 
   if (!hotelId) return null;
-
-  const strategies = [
-    { id: 1, tipo: "Corto Plazo", titulo: "Revenue Management", prompt: "Estrategia de Revenue Management para subir ADR inmediato." },
-    { id: 2, tipo: "Corto Plazo", titulo: "Experiencia de Cliente", prompt: "Estrategia de Experiencia de Cliente para mejorar reseñas." },
-    { id: 3, tipo: "Largo Plazo", titulo: "Transformación Digital", prompt: "Plan de Transformación Digital e IA a 12 meses." },
-    { id: 4, tipo: "Largo Plazo", titulo: "Sostenibilidad y Marca", prompt: "Estrategia de Sostenibilidad y Marca Premium a 2 años." }
-  ];
-
-  const handleGenerateStrategy = async (strategy: typeof strategies[0]) => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: strategy.prompt,
-          hotelId: hotelId,
-          tipo: strategy.tipo,
-          datosHotel: { nombre: hotelName }
-        }),
-      });
-      
-      if (res.ok) {
-        const result = await res.json();
-        router.push("/stats");
-      } else {
-        alert("Error generando estrategia");
-      }
-    } catch (e) {
-      console.error("Error:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex">
@@ -234,6 +226,29 @@ export default function Home() {
           </div>
         ))}
         </div>
+        </div>
+      )}
+
+      {/* Zona de Sesiones Guardadas */}
+      {savedSessions.length > 0 && (
+        <div className="w-full max-w-6xl my-12 animate-fade-in">
+          <h2 className="text-2xl font-black text-slate-400 italic mb-6 uppercase tracking-widest text-center">Tus Estrategias en Curso</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {savedSessions.map((session, i) => (
+              <div 
+                key={i}
+                onClick={() => router.push(`/strategy/${session.id}`)}
+                className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-5 rounded-2xl cursor-pointer transition-all hover:border-blue-500/50 shadow-lg flex flex-col gap-3 group"
+              >
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">{session.tipo || 'Estrategia'}</span>
+                  <span className="text-xs text-slate-500 font-mono">{session.fecha}</span>
+                </div>
+                <h3 className="font-bold text-md text-white truncate group-hover:text-blue-400 transition-colors uppercase italic">{session.nombre}</h3>
+                <span className="text-blue-500 text-xs font-bold tracking-widest mt-1 group-hover:translate-x-1 transition-transform">⮑ Continuar Ejecución</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

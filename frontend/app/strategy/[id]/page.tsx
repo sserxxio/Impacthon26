@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -9,6 +9,9 @@ interface ChatMessage {
 
 export default function StrategyPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
+
   const [strategy, setStrategy] = useState<any>(null);
   const [hotelName, setHotelName] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -22,7 +25,8 @@ export default function StrategyPage() {
   }, [messages]);
 
   useEffect(() => {
-    const data = localStorage.getItem("currentStrategy");
+    if (!id) return;
+    const data = localStorage.getItem(`strategy_${id}`);
     const storedName = localStorage.getItem("hotelName") || "Hotel";
     if (!data) {
       router.push("/");
@@ -32,18 +36,29 @@ export default function StrategyPage() {
     setStrategy(parsed);
     setHotelName(storedName);
 
-    // Initial message automatically injected based on the Strategy info
-    setMessages([
-      {
-        role: "assistant",
-        content: `**Iniciando Ejecución: ${parsed.nombre}**\n\nHe transferido los datos de la estrategia a tu sesión y estoy listo para guiarte en el plan integral basado en: *${parsed.estrategia}*.\n\n` +
-          `• **Inversión base:** ${parsed.coste}\n` +
-          `• **Plazo:** ${parsed.tiempo}\n` +
-          `• **Target:** ${parsed.targeting}\n\n` +
-          `Como tu IA Consultora, tengo todo el contexto memorizado. ¿Qué necesitas preparar primero? Puedes pedirme redactar correos, estructuras de redes sociales o esquemas operativos paso a paso.`
-      }
-    ]);
-  }, [router]);
+    // Initial message automatically injected base depending on prior history
+    const existingHistory = localStorage.getItem(`chat_history_${id}`);
+    if (existingHistory) {
+      setMessages(JSON.parse(existingHistory));
+    } else {
+      setMessages([
+        {
+          role: "assistant",
+          content: `**Iniciando Ejecución: ${parsed.nombre}**\n\nHe transferido los datos de la estrategia a tu sesión y estoy listo para guiarte en el plan integral basado en: *${parsed.estrategia}*.\n\n` + 
+                   `• **Inversión base:** ${parsed.coste}\n` + 
+                   `• **Plazo:** ${parsed.tiempo}\n` + 
+                   `• **Target:** ${parsed.targeting}\n\n` +
+                   `Como tu IA Consultora, tengo todo el contexto memorizado. ¿Qué necesitas preparar primero? Puedes pedirme redactar correos, estructuras de redes sociales o esquemas operativos paso a paso.`
+        }
+      ]);
+    }
+  }, [router, id]);
+
+  useEffect(() => {
+    if (id && messages.length > 0) {
+      localStorage.setItem(`chat_history_${id}`, JSON.stringify(messages));
+    }
+  }, [messages, id]);
 
   const sendMessage = async () => {
     if (!inputValue.trim() || loading) return;
@@ -78,7 +93,7 @@ export default function StrategyPage() {
       if (data.modifiedStrategy) {
         const newStrategy = { ...strategy, ...data.modifiedStrategy };
         setStrategy(newStrategy);
-        localStorage.setItem("currentStrategy", JSON.stringify(newStrategy));
+        localStorage.setItem(`strategy_${id}`, JSON.stringify(newStrategy));
       }
     } catch (error) {
       console.error(error);
