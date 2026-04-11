@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
 
 interface OracleResult {
   nombre: string;
@@ -179,39 +180,38 @@ export default function Home() {
     <div className="min-h-screen bg-slate-950 text-white flex">
       <Sidebar />
       
-      <main className="flex-1 pb-32 flex flex-col items-center relative">
-        <header className="w-full max-w-6xl flex justify-between items-center mb-12 p-8">
-          <div>
-            <h1 className="text-3xl font-black text-blue-500 italic tracking-tighter">ORACLE AI</h1>
-            <p className="text-slate-500 text-xs uppercase tracking-widest">Connected: {hotelName}</p>
-          </div>
-        </header>
+      <main className="flex-1 pb-32 flex flex-col relative">
+        <Header hotelName={hotelName} />
 
       {results.length === 0 && !loading && (
-        <div className="my-auto flex flex-col items-center animate-pulse">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-blue-400 font-mono tracking-widest text-sm">INICIALIZANDO SISTEMA ORACLE...</p>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center animate-pulse">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-blue-400 font-mono tracking-widest text-sm">INICIALIZANDO SISTEMA ORACLE...</p>
+          </div>
         </div>
       )}
 
       {loading && results.length < 4 && (
-        <div className="my-auto flex flex-col items-center animate-pulse">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIAS: {results.length}/4</p>
-        </div>
-      )}
-
-      {/* Mensaje de finalización */}
-      {results.length > 0 && !loading && (
-        <div className="w-full max-w-6xl mb-6 text-center animate-pulse">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
-            Aquí tienes una selección de estrategias para ti
-          </h2>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center animate-pulse">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIAS: {results.length}/4</p>
+          </div>
         </div>
       )}
 
       {/* Grid de Resultados */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl my-auto">
+      {results.length > 0 && (
+        <div className="flex-1 flex flex-col items-center justify-center w-full gap-6">
+          {!loading && (
+            <div className="w-full max-w-6xl text-center animate-pulse">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
+                Aquí tienes una selección de estrategias para ti
+              </h2>
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl">
         {results.map((res, i) => (
           <div
             key={i}
@@ -233,7 +233,9 @@ export default function Home() {
             </button>
           </div>
         ))}
-      </div>
+        </div>
+        </div>
+      )}
 
       {/* Popup / Modal */}
       {selected && (

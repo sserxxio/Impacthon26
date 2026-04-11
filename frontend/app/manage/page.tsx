@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
 interface Strategy {
   id: number;
@@ -90,10 +91,7 @@ export default function ManageStrategies() {
       <Sidebar />
 
       <main className="flex-1 p-8">
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold text-blue-400 mb-2">⚙️ Gestionar Estrategias</h1>
-          <p className="text-slate-400">Administra las estrategias que has creado para {hotelName}</p>
-        </header>
+        <Header hotelName={hotelName} />
 
         {/* Botón para crear nueva estrategia */}
         <button
@@ -149,7 +147,7 @@ export default function ManageStrategies() {
           ) : strategies.length === 0 ? (
             <div className="bg-slate-800 border border-slate-700 p-12 rounded-2xl text-center">
               <p className="text-slate-400 mb-4">No tienes estrategias guardadas aún</p>
-              <p className="text-slate-500 text-sm">Crea una nueva usando el botón superior ➕</p>
+              <p className="text-slate-500 text-sm">Crea una nueva usando en el apartado de "Añadir estrategia"</p>
             </div>
           ) : (
             strategies.map((strategy) => (

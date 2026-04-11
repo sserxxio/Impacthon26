@@ -94,7 +94,7 @@ export default function StrategyPage() {
     <div className="min-h-screen bg-slate-950 text-white flex flex-col h-screen">
       <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
         <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
-          <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">ORACLE AI</h1>
+          <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">Velvet</h1>
         </div>
 
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
