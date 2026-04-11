@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import { useSidebar } from "./context/SidebarContext";
 
 interface OracleResult {
   nombre: string;
@@ -27,6 +28,7 @@ export default function Home() {
   const currentProcessId = useRef(0);
   const router = useRouter();
   const hasAutoRun = useRef(false);
+  const { isOpen } = useSidebar();
 
   useEffect(() => {
     const storedHotelId = localStorage.getItem("hotelId");
@@ -60,20 +62,8 @@ export default function Home() {
 
     const prompts = [
       {
-        t: "Corto Plazo",
-        p: "Foco: REVENUE Y PRECIOS. Genera una táctica agresiva para maximizar el ADR mediante paquetes dinámicos y optimización de canales OTA este mes."
-      },
-      {
-        t: "Corto Plazo",
-        p: "Foco: REPUTACIÓN Y OPERACIONES. Genera una táctica de Guest Experience para disparar las reseñas positivas en Google y TripAdvisor mediante un 'efecto WOW' inmediato."
-      },
-      {
-        t: "Largo Plazo",
-        p: "Foco: TECNOLOGÍA E IA. Planifica la implementación de IA generativa para hiper-personalización del customer journey y automatización de procesos internos a 1 año."
-      },
-      {
-        t: "Largo Plazo",
-        p: "Foco: MARCA Y SOSTENIBILIDAD. Planifica un reposicionamiento estratégico hacia el mercado de lujo eco-consciente con certificaciones y cambios estructurales a 2 años."
+        t: "Estrategia Maestra",
+        p: "Foco: REVENUE INTEGRAL. Genera una táctica maestra que fusione maximización de ADR a corto plazo y mejora de reputación digital mediante optimizaciones operativas y de marketing directo."
       }
     ];
 
@@ -188,7 +178,7 @@ export default function Home() {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center animate-pulse">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIAS: {results.length}/4</p>
+            <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIA PRINCIPAL...</p>
           </div>
         </div>
       )}
@@ -197,13 +187,13 @@ export default function Home() {
       {results.length > 0 && (
         <div className="flex-1 flex flex-col items-center justify-center w-full gap-6">
           {!loading && (
-            <div className="w-full max-w-6xl text-center animate-pulse">
+            <div className="w-full max-w-2xl text-center animate-pulse mb-4">
               <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
-                Aquí tienes una selección de estrategias para ti
+                Aquí tienes tu estrategia integral
               </h2>
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl">
+          <div className="grid grid-cols-1 w-full max-w-3xl">
         {results.map((res, i) => (
           <div
             key={i}
@@ -279,7 +269,9 @@ export default function Home() {
       </main>
 
       {/* Fixed Prompt Box */}
-      <div className="fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-40 pl-[17rem]">
+      <div className={`fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-40 transition-all duration-300 ${
+        isOpen ? "pl-[17rem]" : "pl-4"
+      }`}>
         <div className="max-w-4xl mx-auto flex gap-4 items-center">
           <input
             type="text"

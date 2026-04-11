@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
+import { useSidebar } from "../../context/SidebarContext";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -12,6 +13,7 @@ export default function StrategyPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
+  const { isOpen } = useSidebar();
 
   const [strategy, setStrategy] = useState<any>(null);
   const [hotelName, setHotelName] = useState("");
@@ -45,11 +47,11 @@ export default function StrategyPage() {
       setMessages([
         {
           role: "assistant",
-          content: `**Iniciando Ejecución: ${parsed.nombre}**\n\nHe transferido los datos de la estrategia a tu sesión y estoy listo para guiarte en el plan integral basado en: *${parsed.estrategia}*.\n\n` + 
-                   `• **Inversión base:** ${parsed.coste}\n` + 
-                   `• **Plazo:** ${parsed.tiempo}\n` + 
-                   `• **Target:** ${parsed.targeting}\n\n` +
-                   `Como tu IA Consultora, tengo todo el contexto memorizado. ¿Qué necesitas preparar primero? Puedes pedirme redactar correos, estructuras de redes sociales o esquemas operativos paso a paso.`
+          content: `**Iniciando Ejecución: ${parsed.nombre}**\n\nHe transferido los datos de la estrategia a tu sesión y estoy listo para guiarte en el plan integral basado en: *${parsed.estrategia}*.\n\n` +
+            `• **Inversión base:** ${parsed.coste}\n` +
+            `• **Plazo:** ${parsed.tiempo}\n` +
+            `• **Target:** ${parsed.targeting}\n\n` +
+            `Como tu IA Consultora, tengo todo el contexto memorizado. ¿Qué necesitas preparar primero? Puedes pedirme redactar correos, estructuras de redes sociales o esquemas operativos paso a paso.`
         }
       ]);
     }
@@ -107,110 +109,113 @@ export default function StrategyPage() {
   if (!strategy) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col h-screen">
-      <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
-        <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
-          <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">Velvet</h1>
-        </div>
+    <div className="min-h-screen bg-slate-950 text-white flex h-screen font-sans overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col relative h-full min-w-0">
+        <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
+          <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
+            <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">Velvet</h1>
+          </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
-          <h2 className="text-lg font-bold text-white uppercase italic truncate max-w-[200px] md:max-w-sm hidden sm:block">
-            {strategy.nombre}
-          </h2>
-          <button
-            onClick={() => setShowDetails(true)}
-            className="text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors border border-emerald-400/20 shadow-md"
-          >
-            📑 Detalles
-          </button>
-        </div>
+            <h2 className="text-lg font-bold text-white uppercase italic truncate max-w-[200px] md:max-w-sm hidden sm:block">
+              {strategy.nombre}
+            </h2>
+            <button
+              onClick={() => setShowDetails(true)}
+              className="text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors border border-emerald-400/20 shadow-md"
+            >
+              📑 Detalles
+            </button>
+          </div>
 
-        <button onClick={() => router.push("/")} className="text-slate-500 hover:text-white transition-colors text-sm font-bold bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
-          Cerrar Sesión
-        </button>
+          <button onClick={() => router.push("/")} className="text-slate-500 hover:text-white transition-colors text-sm font-bold bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+            Cerrar Sesión
+          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-40 max-w-4xl w-full mx-auto relative z-0">
           {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[90%] md:max-w-[85%] p-5 shadow-sm text-[15px] ${msg.role === "user" ? "bg-blue-600 text-white rounded-3xl rounded-br-sm" : "bg-slate-800 text-slate-200 border border-slate-700 rounded-3xl rounded-tl-sm leading-relaxed whitespace-pre-wrap"}`}>
-              {msg.content}
+            <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[90%] md:max-w-[85%] p-5 shadow-sm text-[15px] ${msg.role === "user" ? "bg-blue-600 text-white rounded-3xl rounded-br-sm" : "bg-slate-800 text-slate-200 border border-slate-700 rounded-3xl rounded-tl-sm leading-relaxed whitespace-pre-wrap"}`}>
+                {msg.content}
+              </div>
             </div>
-          </div>
-        ))}
-        {loading && (
-          <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-3xl rounded-tl-sm bg-slate-800 p-5 border border-slate-700 flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-.2s]"></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-.4s]"></div>
+          ))}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="max-w-[85%] rounded-3xl rounded-tl-sm bg-slate-800 p-5 border border-slate-700 flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-.2s]"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-.4s]"></div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
           <div ref={messagesEndRef} />
         </main>
 
-        <div className="fixed bottom-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] pl-[17rem]">
+        <div className={`fixed bottom-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] transition-all duration-300 ${isOpen ? "pl-[17rem]" : "pl-4"
+          }`}>
           <div className="max-w-4xl mx-auto flex gap-3 items-center">
             <input
-            type="text"
-            placeholder="Pregunta o pide detalles de implementación..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
-            }}
-            disabled={loading}
-            className="flex-1 bg-slate-950 border border-slate-700 rounded-[2rem] px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!inputValue.trim() || loading}
-            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed w-[3.5rem] h-[3.5rem] rounded-full flex shrink-0 items-center justify-center font-black transition-all shadow-lg text-white"
-          >
-            ↑
-          </button>
+              type="text"
+              placeholder="Pregunta o pide detalles de implementación..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendMessage();
+              }}
+              disabled={loading}
+              className="flex-1 bg-slate-950 border border-slate-700 rounded-[2rem] px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!inputValue.trim() || loading}
+              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed w-[3.5rem] h-[3.5rem] rounded-full flex shrink-0 items-center justify-center font-black transition-all shadow-lg text-white"
+            >
+              ↑
+            </button>
+          </div>
         </div>
-      </div>
-      {/* Popup / Modal Detalles */}
-      {showDetails && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl relative">
-            <button onClick={() => setShowDetails(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl transition-colors">✕</button>
-            <span className="text-blue-500 font-mono text-xs font-bold uppercase tracking-[0.3em]">{strategy.tipo || "Análisis Estratégico"}</span>
-            <h2 className="text-3xl md:text-4xl font-black mb-6 italic uppercase leading-tight">{strategy.nombre}</h2>
+        {/* Popup / Modal Detalles */}
+        {showDetails && (
+          <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-[2.5rem] p-10 shadow-2xl relative">
+              <button onClick={() => setShowDetails(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl transition-colors">✕</button>
+              <span className="text-blue-500 font-mono text-xs font-bold uppercase tracking-[0.3em]">{strategy.tipo || "Análisis Estratégico"}</span>
+              <h2 className="text-3xl md:text-4xl font-black mb-6 italic uppercase leading-tight">{strategy.nombre}</h2>
 
-            <div className="space-y-8">
-              <section>
-                <h3 className="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Hoja de Ruta</h3>
-                <p className="text-slate-200 text-lg leading-relaxed">{strategy.estrategia}</p>
-              </section>
+              <div className="space-y-8">
+                <section>
+                  <h3 className="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Hoja de Ruta</h3>
+                  <p className="text-slate-200 text-lg leading-relaxed">{strategy.estrategia}</p>
+                </section>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
-                  <h3 className="text-orange-400 text-[10px] font-bold uppercase mb-1">Presupuesto</h3>
-                  <p className="text-xl font-bold">{strategy.coste}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
+                    <h3 className="text-orange-400 text-[10px] font-bold uppercase mb-1">Presupuesto</h3>
+                    <p className="text-xl font-bold">{strategy.coste}</p>
+                  </div>
+                  <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
+                    <h3 className="text-emerald-400 text-[10px] font-bold uppercase mb-1">Implementación</h3>
+                    <p className="text-xl font-bold">{strategy.tiempo}</p>
+                  </div>
                 </div>
-                <div className="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
-                  <h3 className="text-emerald-400 text-[10px] font-bold uppercase mb-1">Implementación</h3>
-                  <p className="text-xl font-bold">{strategy.tiempo}</p>
-                </div>
-              </div>
 
-              <div className="flex justify-between items-center bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
-                <div>
-                  <h3 className="text-blue-400 text-[10px] font-bold uppercase">ROI Proyectado</h3>
-                  <p className="text-3xl font-black text-blue-400">{strategy.roi}</p>
-                </div>
-                <div className="text-right">
-                  <h3 className="text-slate-500 text-[10px] font-bold uppercase">Target</h3>
-                  <p className="text-sm text-slate-300 max-w-[200px] truncate">{strategy.targeting}</p>
+                <div className="flex justify-between items-center bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
+                  <div>
+                    <h3 className="text-blue-400 text-[10px] font-bold uppercase">ROI Proyectado</h3>
+                    <p className="text-3xl font-black text-blue-400">{strategy.roi}</p>
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-slate-500 text-[10px] font-bold uppercase">Target</h3>
+                    <p className="text-sm text-slate-300 max-w-[200px] truncate">{strategy.targeting}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );
