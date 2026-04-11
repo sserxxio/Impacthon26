@@ -23,6 +23,14 @@ export default function LoginPage() {
   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
   const [status, setStatus] = useState<HotelStatus | null>(null);
   const [error, setError] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createFormData, setCreateFormData] = useState({
+    hotelName: "",
+    country: "",
+    brand: "",
+    stars: "3",
+    numRooms: "",
+  });
   const router = useRouter();
 
   // Buscar hoteles
@@ -95,6 +103,46 @@ export default function LoginPage() {
     router.push("/");
   };
 
+  // Crear nuevo hotel
+  const handleCreateHotel = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!createFormData.hotelName.trim() || !createFormData.country.trim()) {
+      setError("Nombre del hotel y país son requeridos");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/hotel/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(createFormData),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Error al crear hotel");
+      }
+
+      const newHotel: Hotel = await res.json();
+      
+      // Guardar en localStorage y pasar a amenidades
+      localStorage.setItem("hotelId", newHotel.id.toString());
+      localStorage.setItem("hotelName", newHotel.hotelName);
+      
+      // Redirigir a formulario de amenidades
+      setTimeout(() => {
+        router.push("/amenities");
+      }, 1000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error creando hotel");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8">
       <header className="mb-16 text-center">
@@ -163,10 +211,29 @@ export default function LoginPage() {
             )}
 
             {searchQuery.trim().length > 0 && searchResults.length === 0 && !loading && (
-              <div className="text-center py-8 text-slate-400">
-                No se encontraron hoteles
+              <div className="text-center py-8">
+                <p className="text-slate-400 mb-4">No se encontraron hoteles</p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-blue-500/20"
+                >
+                Crear Nuevo Hotel
+                </button>
               </div>
             )}
+
+            {/* Botón para crear hotel siempre visible */}
+            <div className="mt-8 pt-8 border-t border-slate-700">
+              <p className="text-slate-400 text-sm mb-4 text-center">
+                ¿No encuentras tu hotel?
+              </p>
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-blue-500/20"
+              >
+                ➕ Crear Nuevo Hotel
+              </button>
+            </div>
           </div>
         </div>
       ) : status ? (
@@ -242,6 +309,117 @@ export default function LoginPage() {
           </div>
         </div>
       ) : null}
+
+      {/* MODAL: Crear Nuevo Hotel */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-slate-800 rounded-3xl p-8 max-w-md w-full border border-blue-500/30 shadow-2xl">
+            <h2 className="text-2xl font-bold text-blue-400 mb-6">➕ Crear Nuevo Hotel</h2>
+            
+            {error && (
+              <div className="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-lg mb-4 text-sm">
+                ⚠️ {error}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateHotel} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  Nombre del Hotel *
+                </label>
+                <input
+                  type="text"
+                  value={createFormData.hotelName}
+                  onChange={(e) => setCreateFormData({ ...createFormData, hotelName: e.target.value })}
+                  placeholder="Ej: Hotel Boutique Barcelona"
+                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  País *
+                </label>
+                <input
+                  type="text"
+                  value={createFormData.country}
+                  onChange={(e) => setCreateFormData({ ...createFormData, country: e.target.value })}
+                  placeholder="Ej: España"
+                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  Marca (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={createFormData.brand}
+                  onChange={(e) => setCreateFormData({ ...createFormData, brand: e.target.value })}
+                  placeholder="Ej: Marriott"
+                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                    Estrellas
+                  </label>
+                  <select
+                    value={createFormData.stars}
+                    onChange={(e) => setCreateFormData({ ...createFormData, stars: e.target.value })}
+                    className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  >
+                    <option value="1">⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                    Habitaciones
+                  </label>
+                  <input
+                    type="number"
+                    value={createFormData.numRooms}
+                    onChange={(e) => setCreateFormData({ ...createFormData, numRooms: e.target.value })}
+                    placeholder="Ej: 150"
+                    className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setCreateFormData({ hotelName: "", country: "", brand: "", stars: "3", numRooms: "" });
+                    setError("");
+                  }}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg font-semibold transition text-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 px-4 py-2 rounded-lg font-semibold transition text-sm shadow-lg shadow-blue-500/20"
+                >
+                  {loading ? "Creando..." : "Crear"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="mt-20 text-center text-slate-500 text-sm">
