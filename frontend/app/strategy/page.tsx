@@ -1,4 +1,3 @@
-@ -0, 0 + 1, 200 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";

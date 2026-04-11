@@ -1,4 +1,3 @@
-@ -0, 0 + 1, 66 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
