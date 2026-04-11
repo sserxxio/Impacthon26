@@ -50,6 +50,7 @@ model Hotel {
   cityGastro       String?
   amenities        HotelAmenities?
   analyses         Analysis[]
+  statistics       Statistics[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -123,4 +124,36 @@ model Analysis {
   
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model Statistics {
+  id               Int      @id @default(autoincrement())
+  hotel            Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId          Int
+  
+  // Período
+  month            Int      // 1-12
+  year             Int
+  
+  // Datos financieros
+  ingresos         Float    @default(0)
+  costes           Float    @default(0)
+  marketingGasto   Float    @default(0)
+  utilidad         Float    @default(0)
+  roi              Float    @default(0)
+  
+  // Datos operacionales
+  ocupacion        Float    @default(0)     // porcentaje
+  adr              Float    @default(0)     // Average Daily Rate
+  reservas         Int      @default(0)
+  huespedes        Int      @default(0)
+  
+  // Reputación
+  puntuacion       Float    @default(0)
+  resenas          Int      @default(0)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([hotelId, month, year])
 }
