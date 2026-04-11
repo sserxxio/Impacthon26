@@ -36,7 +36,7 @@ export default function ManageStrategies() {
     setHotelId(parseInt(storedHotelId));
     setHotelName(storedHotelName || "Hotel");
     fetchStrategies(parseInt(storedHotelId));
-    
+
     // Cargar sesiones de IA automatizadas
     const storedSessions = localStorage.getItem("saved_sessions");
     if (storedSessions) {
@@ -111,7 +111,7 @@ export default function ManageStrategies() {
 
   const handleCompleteSession = (id: string) => {
     const today = new Date().toLocaleDateString('es-ES'); // DD/MM/YYYY
-    const newSessions = savedSessions.map(s => 
+    const newSessions = savedSessions.map(s =>
       s.id === id ? { ...s, fechaFin: today } : s
     );
     setSavedSessions(newSessions);
@@ -122,7 +122,7 @@ export default function ManageStrategies() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex">
       <Sidebar />
 
       <main className="flex-1 p-8">
@@ -130,27 +130,27 @@ export default function ManageStrategies() {
 
         {/* Zona de Sesiones de Chat Guardadas */}
         {savedSessions.length > 0 && (
-          <div className="mb-12 animate-fade-in border-b border-slate-700 pb-12">
-            <h2 className="text-xl font-black text-slate-400 italic mb-6 uppercase tracking-widest">Estrategias de IA en Curso</h2>
+          <div className="mb-12 animate-fade-in border-b border-[#ae8d6e]/30 pb-12">
+            <h2 className="text-xl font-black text-[#ae8d6e] italic mb-6 uppercase tracking-widest">Estrategias de IA en Curso</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {savedSessions.map((session, i) => (
-                <div 
+                <div
                   key={i}
-                  className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-5 rounded-2xl cursor-pointer transition-all hover:border-blue-500/50 shadow-lg flex flex-col gap-3 group relative"
+                  className="bg-white/50 hover:bg-white border border-[#ae8d6e]/30 p-5 rounded-2xl cursor-pointer transition-all hover:border-[#ae8d6e]/50 shadow-lg flex flex-col gap-3 group relative"
                   onClick={() => router.push(`/strategy/${session.id}`)}
                 >
                   <div className="flex justify-between items-center relative">
-                    <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">
-                      {session.fechaFin ? '✅ COMPLETADA' : (session.tipo || 'Estrategia')}
+                    <span className="text-[10px] font-black px-3 py-1 bg-[#f5f4f1] text-[#5e0710] rounded-lg">
+                      {session.fechaFin ? ' COMPLETADA' : (session.tipo || 'Estrategia')}
                     </span>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-500 font-mono">{session.fecha}</span>
-                      <button 
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setActiveDropdown(activeDropdown === session.id ? null : session.id); 
+                      <span className="text-xs text-[#f5f4f1]0 font-mono">{session.fecha}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveDropdown(activeDropdown === session.id ? null : session.id);
                         }}
-                        className="bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-lg text-[10px] font-bold transition-all border border-slate-600"
+                        className="bg-transparent hover:bg-[#683110] text-[#683110] hover:text-[#f5f4f1] px-3 py-1 rounded-lg text-[10px] font-bold transition-all border border-[#683110]"
                         title="Opciones"
                       >
                         ACCIONES ▾
@@ -158,21 +158,21 @@ export default function ManageStrategies() {
 
                       {/* Dropdown de Acciones */}
                       {activeDropdown === session.id && (
-                        <div 
-                          className="absolute right-0 top-10 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 py-2 w-40 animate-fade-in"
+                        <div
+                          className="absolute right-0 top-10 bg-white border border-[#ae8d6e]/30 rounded-xl shadow-2xl z-20 py-2 w-40 animate-fade-in"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {!session.fechaFin && (
-                            <button 
+                            <button
                               onClick={() => handleCompleteSession(session.id)}
-                              className="w-full text-left px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                              className="w-full text-left px-4 py-2 text-xs font-bold text-[#683110] hover:bg-[#683110]/10 transition-colors"
                             >
                               ✨ COMPLETAR
                             </button>
                           )}
-                          <button 
+                          <button
                             onClick={() => setSessionToDelete(session.id)}
-                            className="w-full text-left px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
+                            className="w-full text-left px-4 py-2 text-xs font-bold text-[#c50000] hover:bg-[#c50000]/10 transition-colors"
                           >
                             🗑️ ELIMINAR
                           </button>
@@ -180,8 +180,8 @@ export default function ManageStrategies() {
                       )}
                     </div>
                   </div>
-                  <h3 className="font-bold text-md text-white truncate group-hover:text-blue-400 transition-colors uppercase italic">{session.nombre}</h3>
-                  <span className="text-blue-500 text-xs font-bold tracking-widest mt-1 group-hover:translate-x-1 transition-transform">⮑ Abrir Chat</span>
+                  <h3 className="font-bold text-md text-[#5e0710] truncate group-hover:text-[#683110] transition-colors uppercase italic">{session.nombre}</h3>
+                  <span className="text-[#683110] text-xs font-bold tracking-widest mt-1 group-hover:translate-x-1 transition-transform">⮑ Abrir Chat</span>
                 </div>
               ))}
             </div>
@@ -191,33 +191,33 @@ export default function ManageStrategies() {
         {/* Botón para crear nueva estrategia manual */}
         <button
           onClick={() => setShowForm(!showForm)}
-          className="mb-8 bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-lg font-bold transition-all"
+          className="mb-8 border-2 border-[#683110] bg-transparent text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1] px-6 py-3 rounded-lg font-bold transition-all"
         >
-          ➕ Nueva Estrategia
+          Nueva Estrategia
         </button>
 
         {/* Formulario para crear estrategia */}
         {showForm && (
-          <div className="bg-slate-800 border border-slate-700 p-8 rounded-2xl mb-8">
-            <h2 className="text-2xl font-bold text-emerald-400 mb-6">Crear Nueva Estrategia</h2>
+          <div className="bg-white border border-[#ae8d6e]/30 p-8 rounded-2xl mb-8">
+            <h2 className="text-2xl font-bold text-[#683110] mb-6">Crear Nueva Estrategia</h2>
             <div className="space-y-4">
               <input
                 type="text"
                 placeholder="Nombre de la estrategia"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                className="w-full bg-transparent border border-[#683110] rounded-lg px-4 py-3 text-[#683110] placeholder-slate-400 focus:outline-none focus:border-[#ae8d6e]"
               />
               <textarea
                 placeholder="Descripción y detalles de la estrategia"
                 value={formData.estrategia}
                 onChange={(e) => setFormData({ ...formData, estrategia: e.target.value })}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 h-32"
+                className="w-full bg-transparent border border-[#683110] rounded-lg px-4 py-3 text-[#683110] placeholder-slate-400 focus:outline-none focus:border-[#ae8d6e] h-32"
               />
               <div className="flex gap-4">
                 <button
                   onClick={handleSaveStrategy}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 px-4 py-3 rounded-lg font-bold transition-all"
+                  className="flex-1 border-2 border-[#683110] bg-transparent text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1] px-4 py-3 rounded-lg font-bold transition-all"
                 >
                   💾 Guardar
                 </button>
@@ -226,7 +226,7 @@ export default function ManageStrategies() {
                     setShowForm(false);
                     setFormData({ name: "", estrategia: "" });
                   }}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-4 py-3 rounded-lg font-bold transition-all"
+                  className="flex-1 border-2 border-[#683110] bg-transparent text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1] px-4 py-3 rounded-lg font-bold transition-all"
                 >
                   ❌ Cancelar
                 </button>
@@ -238,22 +238,22 @@ export default function ManageStrategies() {
         {/* Lista de estrategias */}
         <div className="space-y-4">
           {loading ? (
-            <p className="text-slate-400 text-center py-8">Cargando estrategias...</p>
+            <p className="text-[#ae8d6e] text-center py-8">Cargando estrategias...</p>
           ) : strategies.length === 0 && savedSessions.length === 0 ? (
-            <div className="bg-slate-800 border border-slate-700 p-12 rounded-2xl text-center mt-8">
-              <p className="text-slate-400 mb-4">No tienes estrategias guardadas aún</p>
-              <p className="text-slate-500 text-sm">Crea una nueva usando en el apartado de "Añadir estrategia"</p>
+            <div className="bg-white border border-[#ae8d6e]/30 p-12 rounded-2xl text-center mt-8">
+              <p className="text-[#ae8d6e] mb-4">No tienes estrategias guardadas aún</p>
+              <p className="text-[#f5f4f1]0 text-sm">Crea una nueva usando en el apartado de "Añadir estrategia"</p>
             </div>
           ) : (
             strategies.map((strategy) => (
               <button
                 key={strategy.id}
                 onClick={() => setSelectedStrategy(strategy)}
-                className="w-full bg-slate-800 border border-slate-700 p-6 rounded-xl hover:border-blue-500/50 hover:bg-slate-700/80 transition-all text-left"
+                className="w-full bg-white border border-[#ae8d6e]/30 p-6 rounded-xl hover:border-[#ae8d6e]/50 hover:bg-[#683110]/80 transition-all text-left"
               >
-                <h3 className="text-lg font-bold text-blue-400 mb-2">{strategy.name}</h3>
-                <p className="text-slate-400 text-sm line-clamp-2">{strategy.estrategia}</p>
-                <p className="text-slate-500 text-xs mt-2">
+                <h3 className="text-lg font-bold text-[#683110] mb-2">{strategy.name}</h3>
+                <p className="text-[#ae8d6e] text-sm line-clamp-2">{strategy.estrategia}</p>
+                <p className="text-[#f5f4f1]0 text-xs mt-2">
                   Creada el {new Date(strategy.createdAt).toLocaleDateString()}
                 </p>
               </button>
@@ -263,28 +263,28 @@ export default function ManageStrategies() {
 
         {/* Modal para ver/editar estrategia */}
         {selectedStrategy && (
-          <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 w-full max-w-2xl rounded-2xl p-8 shadow-2xl">
+          <div className="fixed inset-0 bg-[#f5f4f1]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-white border border-[#ae8d6e]/30 w-full max-w-2xl rounded-2xl p-8 shadow-2xl">
               <button
                 onClick={() => setSelectedStrategy(null)}
-                className="absolute top-4 right-4 text-slate-500 hover:text-white text-2xl"
+                className="absolute top-4 right-4 text-[#f5f4f1]0 hover:text-[#5e0710] text-2xl"
               >
                 ✕
               </button>
-              <h2 className="text-3xl font-bold text-blue-400 mb-6">{selectedStrategy.name}</h2>
-              <div className="bg-slate-700 p-6 rounded-lg mb-6">
-                <p className="text-slate-200 whitespace-pre-wrap">{selectedStrategy.estrategia}</p>
+              <h2 className="text-3xl font-bold text-[#683110] mb-6">{selectedStrategy.name}</h2>
+              <div className="bg-[#683110] p-6 rounded-lg mb-6">
+                <p className="text-[#f5f4f1] whitespace-pre-wrap">{selectedStrategy.estrategia}</p>
               </div>
               <div className="flex gap-4">
                 <button
                   onClick={() => handleDeleteStrategy(selectedStrategy.id)}
-                  className="flex-1 bg-red-600 hover:bg-red-500 px-4 py-3 rounded-lg font-bold transition-all"
+                  className="flex-1 bg-[#c50000] hover:bg-[#c50000] px-4 py-3 rounded-lg font-bold transition-all"
                 >
                   🗑️ Eliminar
                 </button>
                 <button
                   onClick={() => setSelectedStrategy(null)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-4 py-3 rounded-lg font-bold transition-all"
+                  className="flex-1 bg-[#683110] hover:bg-[#683110] px-4 py-3 rounded-lg font-bold transition-all"
                 >
                   ← Cerrar
                 </button>
@@ -295,20 +295,20 @@ export default function ManageStrategies() {
 
         {/* Modal de Confirmación para borrar Sesión de IA */}
         {sessionToDelete && (
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center">
-              <h3 className="text-xl font-bold text-slate-200 mb-4">¿Eliminar chat de IA?</h3>
-              <p className="text-slate-400 text-sm mb-6">Esta acción borrará todo el historial de conversación con el consultor inteligente y los datos base de esta estrategia de forma permanente.</p>
+          <div className="fixed inset-0 bg-[#f5f4f1]/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+            <div className="bg-white border border-[#ae8d6e]/30 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center">
+              <h3 className="text-xl font-bold text-[#f5f4f1] mb-4">¿Eliminar chat de IA?</h3>
+              <p className="text-[#ae8d6e] text-sm mb-6">Esta acción borrará todo el historial de conversación con el consultor inteligente y los datos base de esta estrategia de forma permanente.</p>
               <div className="flex gap-4">
                 <button
                   onClick={() => handleDeleteSession(sessionToDelete)}
-                  className="flex-1 bg-red-600 hover:bg-red-500 px-4 py-3 rounded-lg font-bold transition-all text-white"
+                  className="flex-1 bg-[#c50000] hover:bg-[#c50000] px-4 py-3 rounded-lg font-bold transition-all text-[#5e0710]"
                 >
                   <span className="block drop-shadow-md">Sí, Eliminar</span>
                 </button>
                 <button
                   onClick={() => setSessionToDelete(null)}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-4 py-3 rounded-lg font-bold transition-all text-white"
+                  className="flex-1 bg-[#683110] hover:bg-[#683110] px-4 py-3 rounded-lg font-bold transition-all text-[#5e0710]"
                 >
                   Cancelar
                 </button>

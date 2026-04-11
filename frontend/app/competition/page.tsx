@@ -103,77 +103,75 @@ export default function CompetitionPage() {
   // Datos para gráfico comparativo
   const comparisonData = analysis
     ? [
-        {
-          name: "Ocupación",
-          "Tu Hotel": Math.round(analysis.yourHotel.avgOcupacion),
-          "Competidor 1": Math.round(analysis.competitors[0]?.avgOcupacion || 0),
-          "Competidor 2": Math.round(analysis.competitors[1]?.avgOcupacion || 0),
-        },
-        {
-          name: "ADR (€)",
-          "Tu Hotel": Math.round(analysis.yourHotel.avgAdr),
-          "Competidor 1": Math.round(analysis.competitors[0]?.avgAdr || 0),
-          "Competidor 2": Math.round(analysis.competitors[1]?.avgAdr || 0),
-        },
-        {
-          name: "Puntuación",
-          "Tu Hotel": analysis.yourHotel.avgPuntuacion * 20, // Escalar a 100
-          "Competidor 1": (analysis.competitors[0]?.avgPuntuacion || 0) * 20,
-          "Competidor 2": (analysis.competitors[1]?.avgPuntuacion || 0) * 20,
-        },
-        {
-          name: "Amenities",
-          "Tu Hotel": analysis.yourHotel.amenitiesCount,
-          "Competidor 1": analysis.competitors[0]?.amenitiesCount || 0,
-          "Competidor 2": analysis.competitors[1]?.amenitiesCount || 0,
-        },
-      ]
+      {
+        name: "Ocupación",
+        "Tu Hotel": Math.round(analysis.yourHotel.avgOcupacion),
+        "Competidor 1": Math.round(analysis.competitors[0]?.avgOcupacion || 0),
+        "Competidor 2": Math.round(analysis.competitors[1]?.avgOcupacion || 0),
+      },
+      {
+        name: "ADR (€)",
+        "Tu Hotel": Math.round(analysis.yourHotel.avgAdr),
+        "Competidor 1": Math.round(analysis.competitors[0]?.avgAdr || 0),
+        "Competidor 2": Math.round(analysis.competitors[1]?.avgAdr || 0),
+      },
+      {
+        name: "Puntuación",
+        "Tu Hotel": analysis.yourHotel.avgPuntuacion * 20, // Escalar a 100
+        "Competidor 1": (analysis.competitors[0]?.avgPuntuacion || 0) * 20,
+        "Competidor 2": (analysis.competitors[1]?.avgPuntuacion || 0) * 20,
+      },
+      {
+        name: "Amenities",
+        "Tu Hotel": analysis.yourHotel.amenitiesCount,
+        "Competidor 1": analysis.competitors[0]?.amenitiesCount || 0,
+        "Competidor 2": analysis.competitors[1]?.amenitiesCount || 0,
+      },
+    ]
     : [];
 
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex">
       <Sidebar />
       <main className="flex-1 pb-12 p-8 max-w-6xl mx-auto space-y-8">
         <Header hotelName={hotelName} />
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-8 rounded-2xl border border-purple-500/30">
-          <h1 className="text-4xl font-bold mb-2">🏆 Análisis de Competencia</h1>
-          <p className="text-purple-100">
+        <div className="bg-transparent p-8 rounded-2xl border border-[#ae8d6e]/30">
+          <h1 className="text-4xl font-bold mb-2 text-[#683110]">Análisis de Competencia</h1>
+          <p className="text-[#683110]">
             Descubre cómo te comparas con los top 2 competidores según tus criterios
           </p>
         </div>
 
         {/* Filtros */}
-        <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
-          <h2 className="text-xl font-bold text-purple-400 mb-6">🔍 Selecciona Criterios de Búsqueda</h2>
+        <div className="bg-transparent border border-[#ae8d6e]/30 p-6 rounded-2xl">
+          <h2 className="text-xl font-bold text-[#683110] mb-6"> Selecciona Criterios de Búsqueda</h2>
 
           <div className="space-y-6">
             {/* Tipo de filtro */}
             <div>
-              <label className="block text-sm font-bold text-slate-300 mb-3 uppercase tracking-wide">
+              <label className="block text-sm font-bold text-[#5e0710] mb-3 uppercase tracking-wide">
                 Tipo de Comparación
               </label>
               <div className="flex gap-4">
                 <button
                   onClick={() => setFilterType("city-stars")}
-                  className={`flex-1 p-4 rounded-xl font-bold transition ${
-                    filterType === "city-stars"
-                      ? "bg-purple-600 text-white border-purple-400"
-                      : "bg-slate-700 text-slate-300 border-slate-600"
-                  } border`}
+                  className={`flex-1 p-4 rounded-xl font-bold transition ${filterType === "city-stars"
+                    ? "bg-[#ae8d6e] text-white border-[#ae8d6e]"
+                    : "bg-[#f5f4f1] text-[#5e0710] border-[#ae8d6e]/40"
+                    } border`}
                 >
-                  🌟 Misma ciudad + Estrellas similares
+                  Misma ciudad + Estrellas similares
                 </button>
                 <button
                   onClick={() => setFilterType("city-price")}
-                  className={`flex-1 p-4 rounded-xl font-bold transition ${
-                    filterType === "city-price"
-                      ? "bg-purple-600 text-white border-purple-400"
-                      : "bg-slate-700 text-slate-300 border-slate-600"
-                  } border`}
+                  className={`flex-1 p-4 rounded-xl font-bold transition ${filterType === "city-price"
+                    ? "bg-[#ae8d6e] text-white border-[#ae8d6e]"
+                    : "bg-[#f5f4f1] text-[#5e0710] border-[#ae8d6e]/40"
+                    } border`}
                 >
-                  💰 Misma ciudad + Rango de precio
+                  Misma ciudad + Rango de precio
                 </button>
               </div>
             </div>
@@ -181,7 +179,7 @@ export default function CompetitionPage() {
             {/* Filtro específico */}
             {filterType === "city-stars" ? (
               <div>
-                <label className="block text-sm font-bold text-slate-300 mb-3 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[#5e0710] mb-3 uppercase tracking-wide">
                   Estrellas de tu hotel
                 </label>
                 <div className="flex gap-2">
@@ -189,23 +187,22 @@ export default function CompetitionPage() {
                     <button
                       key={star}
                       onClick={() => setYourStars(star)}
-                      className={`flex-1 p-3 rounded-lg font-bold transition ${
-                        yourStars === star
-                          ? "bg-yellow-500 text-slate-900"
-                          : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                      }`}
+                      className={`flex-1 p-3 rounded-lg font-bold transition border ${yourStars === star
+                        ? "bg-[#ae8d6e] text-[#5e0710] border-[#ae8d6e]"
+                        : "bg-[#f5f4f1] text-[#5e0710] border-[#ae8d6e]/40 hover:border-[#ae8d6e]"
+                        }`}
                     >
                       {"⭐".repeat(star)}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-[#ae8d6e] mt-2">
                   Se buscarán hoteles en tu ciudad con {yourStars}⭐ ± 1
                 </p>
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-bold text-slate-300 mb-3 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-[#5e0710] mb-3 uppercase tracking-wide">
                   Rango de precio
                 </label>
                 <div className="flex gap-4">
@@ -213,11 +210,10 @@ export default function CompetitionPage() {
                     <button
                       key={price}
                       onClick={() => setYourCityPrice(price)}
-                      className={`flex-1 p-4 rounded-xl font-bold transition ${
-                        yourCityPrice === price
-                          ? "bg-purple-600 text-white border-purple-400"
-                          : "bg-slate-700 text-slate-300 border-slate-600"
-                      } border`}
+                      className={`flex-1 p-4 rounded-xl font-bold transition ${yourCityPrice === price
+                        ? "bg-[#ae8d6e] text-white border-[#ae8d6e]"
+                        : "bg-[#f5f4f1] text-[#5e0710] border-[#ae8d6e]/40"
+                        } border`}
                     >
                       {price === "LOW"
                         ? "💵 Económico"
@@ -227,7 +223,7 @@ export default function CompetitionPage() {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-[#ae8d6e] mt-2">
                   Se buscarán hoteles en tu ciudad con rango {yourCityPrice}
                 </p>
               </div>
@@ -237,16 +233,16 @@ export default function CompetitionPage() {
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 px-8 py-4 rounded-xl font-bold transition shadow-lg shadow-purple-500/30"
+              className="w-full bg-transparent border-2 border-[#5e0710] text-[#5e0710] hover:bg-[#683110] hover:text-[#f5f4f1] disabled:opacity-50 px-8 py-4 rounded-xl font-bold transition shadow-sm hover:shadow-lg hover:shadow-[#5e0710]/30"
             >
-              {loading ? "Analizando..." : "🔍 Analizar Competencia"}
+              {loading ? "Analizando..." : " Analizar Competencia"}
             </button>
           </div>
         </div>
 
         {/* Resultados */}
         {error && (
-          <div className="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded-xl">
+          <div className="bg-red-50 border border-red-200 text-red-900 p-4 rounded-xl shadow-md">
             ⚠️ {error}
           </div>
         )}
@@ -255,55 +251,56 @@ export default function CompetitionPage() {
           <div className="space-y-8">
             {/* Resumen competidores */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-blue-900 to-blue-800 border border-blue-500/50 p-6 rounded-2xl">
-                <h3 className="text-blue-400 font-bold text-sm uppercase mb-3">Tu Hotel</h3>
-                <h2 className="text-2xl font-bold mb-4">{analysis.yourHotel.hotelName}</h2>
-                <div className="space-y-2 text-sm text-blue-100">
+              <div className="bg-white border border-[#ae8d6e]/30 p-6 rounded-2xl shadow-md">
+                <h3 className="text-[#683110] font-bold text-sm uppercase mb-3">Tu Hotel</h3>
+                <h2 className="text-2xl font-bold mb-4 text-[#5e0710]">{analysis.yourHotel.hotelName}</h2>
+                <div className="space-y-2 text-sm text-[#5e0710]">
                   <p>⭐ {analysis.yourHotel.stars} estrellas</p>
                   <p>🏙️ {analysis.yourHotel.cityName}</p>
-                  <p>📊 Ocupación: {Math.round(analysis.yourHotel.avgOcupacion)}%</p>
-                  <p>💰 ADR: €{Math.round(analysis.yourHotel.avgAdr)}</p>
-                  <p>⭐ Puntuación: {analysis.yourHotel.avgPuntuacion.toFixed(1)}/5.0</p>
+                  <p>📊 Ocupación: <span className="text-[#ae8d6e] font-bold">{Math.round(analysis.yourHotel.avgOcupacion)}%</span></p>
+                  <p>💰 ADR: <span className="text-[#ae8d6e] font-bold">€{Math.round(analysis.yourHotel.avgAdr)}</span></p>
+                  <p>⭐ Puntuación: <span className="text-[#ae8d6e] font-bold">{analysis.yourHotel.avgPuntuacion.toFixed(1)}/5.0</span></p>
                 </div>
               </div>
 
               {analysis.competitors.map((comp, idx) => (
                 <div
                   key={comp.id}
-                  className="bg-gradient-to-br from-slate-800 to-slate-700 border border-slate-600 p-6 rounded-2xl hover:border-orange-500/50 transition"
+                  className="bg-white border border-[#ae8d6e]/30 p-6 rounded-2xl hover:shadow-lg hover:border-[#ae8d6e] transition shadow-md"
                 >
-                  <h3 className="text-orange-400 font-bold text-sm uppercase mb-3">
+                  <h3 className="text-[#683110] font-bold text-sm uppercase mb-3">
                     Competidor {idx + 1}
                   </h3>
-                  <h2 className="text-2xl font-bold mb-4">{comp.hotelName}</h2>
-                  <div className="space-y-2 text-sm text-slate-300">
+                  <h2 className="text-2xl font-bold mb-4 text-[#5e0710]">{comp.hotelName}</h2>
+                  <div className="space-y-2 text-sm text-[#5e0710]">
                     <p>⭐ {comp.stars} estrellas</p>
                     <p>🏙️ {comp.cityName}</p>
-                    <p>📊 Ocupación: {Math.round(comp.avgOcupacion)}%</p>
-                    <p>💰 ADR: €{Math.round(comp.avgAdr)}</p>
-                    <p>⭐ Puntuación: {comp.avgPuntuacion.toFixed(1)}/5.0</p>
+                    <p>📊 Ocupación: <span className="text-[#ae8d6e] font-bold">{Math.round(comp.avgOcupacion)}%</span></p>
+                    <p>💰 ADR: <span className="text-[#ae8d6e] font-bold">€{Math.round(comp.avgAdr)}</span></p>
+                    <p>⭐ Puntuación: <span className="text-[#ae8d6e] font-bold">{comp.avgPuntuacion.toFixed(1)}/5.0</span></p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Gráfico comparativo */}
-            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
-              <h3 className="text-xl font-bold text-cyan-400 mb-6">📊 Comparativa de Métricas</h3>
+            <div className="bg-white border border-[#ae8d6e]/30 p-6 rounded-2xl shadow-md">
+              <h3 className="text-xl font-bold text-[#683110] mb-6">📊 Comparativa de Métricas</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={comparisonData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1e293b",
-                      border: "1px solid #475569",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #d1d5db",
+                      color: "#111827"
                     }}
                   />
-                  <Legend />
-                  <Bar dataKey="Tu Hotel" fill="#3b82f6" />
-                  <Bar dataKey="Competidor 1" fill="#f97316" />
+                  <Legend wrapperStyle={{ color: "#374151" }} />
+                  <Bar dataKey="Tu Hotel" fill="#683110" />
+                  <Bar dataKey="Competidor 1" fill="#f59e0b" />
                   <Bar dataKey="Competidor 2" fill="#ef4444" />
                 </BarChart>
               </ResponsiveContainer>
@@ -311,19 +308,19 @@ export default function CompetitionPage() {
 
             {/* Análisis IA */}
             <div className="space-y-6">
-              <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl">
-                <h3 className="text-xl font-bold text-purple-400 mb-4">🤖 Análisis con IA</h3>
-                <p className="text-slate-300 leading-relaxed">{analysis.analysis}</p>
+              <div className="bg-transparent border border-[#ae8d6e]/30 p-6 rounded-2xl">
+                <h3 className="text-xl font-bold text-[#683110] mb-4">🤖 Análisis con IA</h3>
+                <p className="text-[#5e0710] leading-relaxed">{analysis.analysis}</p>
               </div>
 
               {/* Ventajas */}
               {analysis.advantages.length > 0 && (
-                <div className="bg-emerald-500/10 border border-emerald-500/50 p-6 rounded-2xl">
-                  <h3 className="text-emerald-400 font-bold mb-4">💪 Ventajas Competitivas</h3>
+                <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl shadow-md">
+                  <h3 className="text-[#683110] font-bold mb-4 text-lg">💪 Ventajas Competitivas</h3>
                   <ul className="space-y-2">
                     {analysis.advantages.map((adv, i) => (
-                      <li key={i} className="text-emerald-100 flex items-start gap-2">
-                        <span className="text-emerald-400 mt-1">✓</span>
+                      <li key={i} className="text-[#683110] flex items-start gap-2">
+                        <span className="text-[#683110] mt-1 font-bold">✓</span>
                         {adv}
                       </li>
                     ))}
@@ -333,12 +330,12 @@ export default function CompetitionPage() {
 
               {/* Debilidades */}
               {analysis.weaknesses.length > 0 && (
-                <div className="bg-red-500/10 border border-red-500/50 p-6 rounded-2xl">
-                  <h3 className="text-red-400 font-bold mb-4">⚠️ Áreas de Mejora</h3>
+                <div className="bg-red-50 border border-red-200 p-6 rounded-2xl shadow-md">
+                  <h3 className="text-red-900 font-bold mb-4 text-lg">⚠️ Áreas de Mejora</h3>
                   <ul className="space-y-2">
                     {analysis.weaknesses.map((weak, i) => (
-                      <li key={i} className="text-red-100 flex items-start gap-2">
-                        <span className="text-red-400 mt-1">×</span>
+                      <li key={i} className="text-red-900 flex items-start gap-2">
+                        <span className="text-[#c50000] mt-1 font-bold">×</span>
                         {weak}
                       </li>
                     ))}
@@ -348,12 +345,12 @@ export default function CompetitionPage() {
 
               {/* Recomendaciones */}
               {analysis.recommendations.length > 0 && (
-                <div className="bg-cyan-500/10 border border-cyan-500/50 p-6 rounded-2xl">
-                  <h3 className="text-cyan-400 font-bold mb-4">💡 Recomendaciones Estratégicas</h3>
+                <div className="bg-[#f5f4f1] border border-[#ae8d6e] p-6 rounded-2xl shadow-md">
+                  <h3 className="text-[#683110] font-bold mb-4 text-lg">💡 Recomendaciones Estratégicas</h3>
                   <ul className="space-y-2">
                     {analysis.recommendations.map((rec, i) => (
-                      <li key={i} className="text-cyan-100 flex items-start gap-2">
-                        <span className="text-cyan-400 mt-1">→</span>
+                      <li key={i} className="text-[#683110] flex items-start gap-2">
+                        <span className="text-[#683110] mt-1 font-bold">→</span>
                         {rec}
                       </li>
                     ))}

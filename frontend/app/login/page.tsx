@@ -144,12 +144,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-[#5e0710] p-8">
       <header className="mb-16 text-center">
         <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">
           Velvet
         </h1>
-        <p className="text-xl text-slate-300">
+        <p className="text-xl text-[#5e0710]">
           Motor de Decisiones de Marketing — IMPACTHON26
         </p>
       </header>
@@ -157,9 +157,9 @@ export default function LoginPage() {
       {!selectedHotel ? (
         // PANTALLA DE BÚSQUEDA
         <div className="max-w-2xl mx-auto">
-          <div className="bg-slate-800/80 backdrop-blur p-10 rounded-3xl border border-blue-500/30 shadow-2xl">
-            <h2 className="text-3xl font-bold mb-2 text-blue-400">🔍 Ingresa tu Hotel</h2>
-            <p className="text-slate-400 mb-8">
+          <div className="bg-[#683110]/80 backdrop-blur p-10 rounded-3xl border border-[#ae8d6e]/30 shadow-2xl">
+            <h2 className="text-3xl font-bold mb-2 text-[#683110]">🔍 Ingresa tu Hotel</h2>
+            <p className="text-gray-6 mb-8">
               Busca y selecciona tu hotel para continuar
             </p>
 
@@ -169,18 +169,18 @@ export default function LoginPage() {
                 value={searchQuery}
                 onChange={handleSearch}
                 placeholder="Busca por nombre o país..."
-                className="w-full p-4 bg-slate-700 text-white rounded-2xl border border-slate-600 focus:border-blue-500 focus:outline-none transition text-lg"
+                className="w-full p-4 bg-[#683110] text-[#5e0710] rounded-2xl border border-[#683110] focus:border-[#ae8d6e] focus:outline-none transition text-lg"
                 autoFocus
               />
               {loading && (
                 <div className="absolute right-4 top-4">
-                  <div className="animate-spin h-6 w-6 border-2 border-blue-400 border-t-transparent rounded-full"></div>
+                  <div className="animate-spin h-6 w-6 border-2 border-[#ae8d6e] border-t-transparent rounded-full"></div>
                 </div>
               )}
             </div>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded-xl mb-6">
+              <div className="bg-[#c50000]/20 border border-[#c50000] text-red-200 p-4 rounded-xl mb-6">
                 ⚠️ {error}
               </div>
             )}
@@ -192,14 +192,14 @@ export default function LoginPage() {
                   <button
                     key={hotel.id}
                     onClick={() => handleSelectHotel(hotel)}
-                    className="w-full p-4 bg-slate-700 hover:bg-slate-600 rounded-xl border border-slate-600 hover:border-blue-500 transition text-left group"
+                    className="w-full p-4 bg-[#683110] hover:bg-[#683110] rounded-xl border border-[#683110] hover:border-[#ae8d6e] transition text-left group"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-bold text-lg text-white group-hover:text-blue-300 transition">
+                        <h3 className="font-bold text-lg text-[#5e0710] group-hover:text-[#683110] transition">
                           {hotel.hotelName}
                         </h3>
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm text-gray-6">
                           {hotel.country} • ⭐ {hotel.stars} estrellas
                         </p>
                       </div>
@@ -213,8 +213,8 @@ export default function LoginPage() {
             
 
             {/* Botón para crear hotel siempre visible */}
-            <div className="mt-8 pt-8 border-t border-slate-700">
-              <p className="text-slate-400 text-sm mb-4 text-center">
+            <div className="mt-8 pt-8 border-t border-[#ae8d6e]">
+              <p className="text-gray-6 text-sm mb-4 text-center">
                 ¿No encuentras tu hotel?
               </p>
               <button
@@ -229,19 +229,19 @@ export default function LoginPage() {
       ) : status ? (
         // PANTALLA DE ESTADO
         <div className="max-w-2xl mx-auto">
-          <div className="bg-slate-800/80 backdrop-blur p-10 rounded-3xl border border-emerald-500/30 shadow-2xl text-center">
+          <div className="bg-[#683110]/80 backdrop-blur p-10 rounded-3xl border border-[#ae8d6e]/30 shadow-2xl text-center">
             {status.status === "pending" ? (
               <>
                 <h2 className="text-3xl font-bold mb-4 text-yellow-400">📋 Completar Cuestionario</h2>
-                <div className="bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-2xl mb-6">
+                <div className="bg-[#ae8d6e]/10 border border-yellow-500/30 p-6 rounded-2xl mb-6">
                   <p className="text-lg mb-2">
-                    Hotel: <span className="font-bold text-blue-300">{status.hotel.hotelName}</span>
+                    Hotel: <span className="font-bold text-[#683110]">{status.hotel.hotelName}</span>
                   </p>
-                  <p className="text-slate-300">
+                  <p className="text-[#5e0710]">
                     Aún no has registrado tus servicios y amenidades
                   </p>
                 </div>
-                <p className="text-slate-400 mb-8">
+                <p className="text-gray-6 mb-8">
                   Serás redirigido automáticamente al cuestionario en 10 segundos...
                 </p>
                 <div className="flex gap-4">
@@ -252,13 +252,13 @@ export default function LoginPage() {
                       localStorage.removeItem("hotelId");
                       localStorage.removeItem("hotelName");
                     }}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-full font-bold transition"
+                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition"
                   >
                     ← Cambiar Hotel
                   </button>
                   <button
                     onClick={() => router.push("/amenities")}
-                    className="flex-1 bg-yellow-600 hover:bg-yellow-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-yellow-500/20"
+                    className="flex-1 bg-[#ae8d6e] hover:bg-[#ae8d6e] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-yellow-500/20"
                   >
                     → Ir Ahora
                   </button>
@@ -267,11 +267,11 @@ export default function LoginPage() {
             ) : (
               <>
                 <h2 className="text-3xl font-bold mb-4 text-emerald-400">✅ Hotel Configurado</h2>
-                <div className="bg-emerald-500/10 border border-emerald-500/30 p-6 rounded-2xl mb-6">
+                <div className="bg-[#683110]/10 border border-[#ae8d6e]/30 p-6 rounded-2xl mb-6">
                   <p className="text-lg mb-2">
-                    Hotel: <span className="font-bold text-blue-300">{status.hotel.hotelName}</span>
+                    Hotel: <span className="font-bold text-[#683110]">{status.hotel.hotelName}</span>
                   </p>
-                  <p className="text-slate-300">
+                  <p className="text-[#5e0710]">
                     Ya tienes servicios registrados. Listo para analizar.
                   </p>
                 </div>
@@ -283,13 +283,13 @@ export default function LoginPage() {
                       localStorage.removeItem("hotelId");
                       localStorage.removeItem("hotelName");
                     }}
-                    className="flex-1 bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-full font-bold transition"
+                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition"
                   >
                     ← Otro Hotel
                   </button>
                   <button
                     onClick={handleContinue}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-emerald-500/20"
+                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-emerald-500/20"
                   >
                     → Ir al Dashboard
                   </button>
@@ -303,18 +303,18 @@ export default function LoginPage() {
       {/* MODAL: Crear Nuevo Hotel */}
       {showCreateForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-3xl p-8 max-w-md w-full border border-blue-500/30 shadow-2xl">
-            <h2 className="text-2xl font-bold text-blue-400 mb-6">➕ Crear Nuevo Hotel</h2>
+          <div className="bg-[#683110] rounded-3xl p-8 max-w-md w-full border border-[#ae8d6e]/30 shadow-2xl">
+            <h2 className="text-2xl font-bold text-[#683110] mb-6">➕ Crear Nuevo Hotel</h2>
             
             {error && (
-              <div className="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-lg mb-4 text-sm">
+              <div className="bg-[#c50000]/20 border border-[#c50000] text-red-200 p-3 rounded-lg mb-4 text-sm">
                 ⚠️ {error}
               </div>
             )}
 
             <form onSubmit={handleCreateHotel} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                <label className="block text-sm font-semibold text-[#5e0710] mb-2">
                   Nombre del Hotel *
                 </label>
                 <input
@@ -322,13 +322,13 @@ export default function LoginPage() {
                   value={createFormData.hotelName}
                   onChange={(e) => setCreateFormData({ ...createFormData, hotelName: e.target.value })}
                   placeholder="Ej: Hotel Boutique Barcelona"
-                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  className="w-full p-3 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] focus:border-[#ae8d6e] focus:outline-none text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                <label className="block text-sm font-semibold text-[#5e0710] mb-2">
                   País *
                 </label>
                 <input
@@ -336,13 +336,13 @@ export default function LoginPage() {
                   value={createFormData.country}
                   onChange={(e) => setCreateFormData({ ...createFormData, country: e.target.value })}
                   placeholder="Ej: España"
-                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  className="w-full p-3 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] focus:border-[#ae8d6e] focus:outline-none text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-2">
+                <label className="block text-sm font-semibold text-[#5e0710] mb-2">
                   Marca (opcional)
                 </label>
                 <input
@@ -350,19 +350,19 @@ export default function LoginPage() {
                   value={createFormData.brand}
                   onChange={(e) => setCreateFormData({ ...createFormData, brand: e.target.value })}
                   placeholder="Ej: Marriott"
-                  className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                  className="w-full p-3 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] focus:border-[#ae8d6e] focus:outline-none text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#5e0710] mb-2">
                     Estrellas
                   </label>
                   <select
                     value={createFormData.stars}
                     onChange={(e) => setCreateFormData({ ...createFormData, stars: e.target.value })}
-                    className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                    className="w-full p-3 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] focus:border-[#ae8d6e] focus:outline-none text-sm"
                   >
                     <option value="1">⭐</option>
                     <option value="2">⭐⭐</option>
@@ -373,7 +373,7 @@ export default function LoginPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#5e0710] mb-2">
                     Habitaciones
                   </label>
                   <input
@@ -381,7 +381,7 @@ export default function LoginPage() {
                     value={createFormData.numRooms}
                     onChange={(e) => setCreateFormData({ ...createFormData, numRooms: e.target.value })}
                     placeholder="Ej: 150"
-                    className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-blue-500 focus:outline-none text-sm"
+                    className="w-full p-3 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] focus:border-[#ae8d6e] focus:outline-none text-sm"
                   />
                 </div>
               </div>
@@ -394,14 +394,14 @@ export default function LoginPage() {
                     setCreateFormData({ hotelName: "", country: "", brand: "", stars: "3", numRooms: "" });
                     setError("");
                   }}
-                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg font-semibold transition text-sm"
+                  className="flex-1 bg-[#683110] hover:bg-[#683110] px-4 py-2 rounded-lg font-semibold transition text-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 px-4 py-2 rounded-lg font-semibold transition text-sm shadow-lg shadow-blue-500/20"
+                  className="flex-1 bg-[#683110] hover:bg-[#f5f4f1]0 disabled:bg-[#683110] px-4 py-2 rounded-lg font-semibold transition text-sm shadow-lg shadow-blue-500/20"
                 >
                   {loading ? "Creando..." : "Crear"}
                 </button>
@@ -412,7 +412,7 @@ export default function LoginPage() {
       )}
 
       {/* Footer */}
-      <footer className="mt-20 text-center text-slate-500 text-sm">
+      <footer className="mt-20 text-center text-[#5e0710] text-sm">
         <p>© 2026 Velvet - Powered by Impacthon26</p>
       </footer>
     </div>
