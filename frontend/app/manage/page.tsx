@@ -23,6 +23,7 @@ export default function ManageStrategies() {
   const [formData, setFormData] = useState({ name: "", estrategia: "" });
   const [savedSessions, setSavedSessions] = useState<any[]>([]);
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -101,9 +102,21 @@ export default function ManageStrategies() {
     // 2. Limpiar rastros de memoria
     localStorage.removeItem(`strategy_${id}`);
     localStorage.removeItem(`chat_history_${id}`);
+    localStorage.removeItem("velvet_last_results"); // Limpiar por si acaso
 
-    // 3. Ocultar modal
+    // 3. Ocultar modal y dropdown
     setSessionToDelete(null);
+    setActiveDropdown(null);
+  };
+
+  const handleCompleteSession = (id: string) => {
+    const today = new Date().toLocaleDateString('es-ES'); // DD/MM/YYYY
+    const newSessions = savedSessions.map(s => 
+      s.id === id ? { ...s, fechaFin: today } : s
+    );
+    setSavedSessions(newSessions);
+    localStorage.setItem('saved_sessions', JSON.stringify(newSessions));
+    setActiveDropdown(null);
   };
 
   if (!hotelId) return null;
@@ -126,20 +139,45 @@ export default function ManageStrategies() {
                   className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-5 rounded-2xl cursor-pointer transition-all hover:border-blue-500/50 shadow-lg flex flex-col gap-3 group relative"
                   onClick={() => router.push(`/strategy/${session.id}`)}
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">{session.tipo || 'Estrategia'}</span>
+                  <div className="flex justify-between items-center relative">
+                    <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">
+                      {session.fechaFin ? '✅ COMPLETADA' : (session.tipo || 'Estrategia')}
+                    </span>
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-slate-500 font-mono">{session.fecha}</span>
                       <button 
-                        onClick={(e) => { e.stopPropagation(); setSessionToDelete(session.id); }}
-                        className="text-slate-500 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-colors z-10"
-                        title="Borrar Chat"
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setActiveDropdown(activeDropdown === session.id ? null : session.id); 
+                        }}
+                        className="bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-lg text-[10px] font-bold transition-all border border-slate-600"
+                        title="Opciones"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                        </svg>
+                        ACCIONES ▾
                       </button>
+
+                      {/* Dropdown de Acciones */}
+                      {activeDropdown === session.id && (
+                        <div 
+                          className="absolute right-0 top-10 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 py-2 w-40 animate-fade-in"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {!session.fechaFin && (
+                            <button 
+                              onClick={() => handleCompleteSession(session.id)}
+                              className="w-full text-left px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                            >
+                              ✨ COMPLETAR
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => setSessionToDelete(session.id)}
+                            className="w-full text-left px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors"
+                          >
+                            🗑️ ELIMINAR
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <h3 className="font-bold text-md text-white truncate group-hover:text-blue-400 transition-colors uppercase italic">{session.nombre}</h3>

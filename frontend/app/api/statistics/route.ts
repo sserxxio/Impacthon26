@@ -39,16 +39,31 @@ function generateMockStatistics(hotelId: number, month: number, year: number) {
   const puntuacion = 3.5 + seededRandom() * 1.5; // 3.5-5 estrellas
   const resenas = Math.floor(20 + seededRandom() * 80); // 20-100 reseñas
 
+  // --- FACTOR DE CRECIMIENTO VELVET (Simulación de impacto) ---
+  // Si estamos en el futuro respecto a la aplicación de la estrategia (Abril 2026)
+  let growthMultiplier = 1;
+  const isFuture = year > 2026 || (year === 2026 && month >= 5);
+  
+  if (isFuture) {
+    // Crecimiento progresivo del 5% al 20%
+    const monthsSinceStart = (year - 2026) * 12 + (month - 4);
+    growthMultiplier = 1 + Math.min(0.2, monthsSinceStart * 0.02);
+  }
+
+  const finalIngresos = Math.round(ingresos * growthMultiplier);
+  const finalUtilidad = Math.round(utilidad * growthMultiplier);
+  const finalOcupacion = Math.round(Math.min(98, ocupacion * (1 + (growthMultiplier - 1) * 0.5)) * 100) / 100;
+
   return {
     month,
     year,
     hotelId,
-    ingresos: Math.round(ingresos),
+    ingresos: finalIngresos,
     costes: Math.round(costes),
     marketingGasto: Math.round(marketingGasto),
-    utilidad: Math.round(utilidad),
-    roi: Math.round(roi * 100) / 100,
-    ocupacion: Math.round(ocupacion * 100) / 100,
+    utilidad: finalUtilidad,
+    roi: finalUtilidad > 0 ? Math.round((finalUtilidad / costes) * 10000) / 100 : -20,
+    ocupacion: finalOcupacion,
     adr: Math.round(adr * 100) / 100,
     reservas,
     huespedes: Math.round(huespedes),
@@ -77,14 +92,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Generar últimos N meses de estadísticas
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
+    // Definimos el punto final solicitado por el usuario: Enero 2027
+    const targetYear = 2027;
+    const targetMonth = 1;
 
     const stats = [];
     for (let i = months - 1; i >= 0; i--) {
-      let month = currentMonth - i;
-      let year = currentYear;
+      let month = targetMonth - i;
+      let year = targetYear;
 
       while (month < 1) {
         month += 12;
@@ -102,8 +117,9 @@ export async function GET(req: NextRequest) {
 
       stats.push(stat);
     }
-
-    stats.reverse();
+    
+    // Garantizar que los datos estén ordenados cronológicamente (Enero 2026 -> Enero 2027)
+    stats.sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
 
     // Calcular resumen
     const summary = {

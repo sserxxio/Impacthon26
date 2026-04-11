@@ -25,6 +25,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<OracleResult | null>(null);
   const [promptText, setPromptText] = useState("");
+  const [isExiting, setIsExiting] = useState(false);
+  const [lastUsedPrompt, setLastUsedPrompt] = useState<string | null>(null);
   const [savedSessions, setSavedSessions] = useState<any[]>([]);
   const currentProcessId = useRef(0);
   const router = useRouter();
@@ -46,13 +48,18 @@ export default function Home() {
       setSavedSessions(JSON.parse(storedSessions));
     }
 
-    if (!hasAutoRun.current) {
+    // Intentar recuperar resultados previos de esta sesión
+    const storedResults = localStorage.getItem("velvet_last_results");
+    if (storedResults) {
+      setResults(JSON.parse(storedResults));
+      hasAutoRun.current = true;
+    } else if (!hasAutoRun.current) {
       hasAutoRun.current = true;
       ejecutarAnalisisCompleto(parsedId, storedHotelName || "Hotel");
     }
   }, [router]);
 
-  const ejecutarAnalisisCompleto = async (overrideHotelId?: number, overrideHotelName?: string) => {
+  const ejecutarAnalisisCompleto = async (overrideHotelId?: number, overrideHotelName?: string, refresh = false) => {
     const pid = Date.now();
     currentProcessId.current = pid;
     setLoading(true);
@@ -64,7 +71,7 @@ export default function Home() {
     const prompts = [
       {
         t: "Estrategia Maestra",
-        p: "Foco: REVENUE INTEGRAL. Genera una táctica maestra que fusione maximización de ADR a corto plazo y mejora de reputación digital mediante optimizaciones operativas y de marketing directo."
+        p: "Foco: REVENUE INTEGRAL. Genera una táctica maestra que fusione maximización de ADR a corto plazo y mejora de reputación digital mediante optimizaciones operativas y de marketing directo. " + (results.length > 0 ? "IMPORTANTE: Genera una propuesta DIFERENTE a las anteriores para ofrecer variedad." : "")
       }
     ];
 
@@ -79,13 +86,18 @@ export default function Home() {
             prompt: item.p,
             hotelId: currentHotelId,
             tipo: item.t,
-            datosHotel: { nombre: currentHotelName }
+            datosHotel: { nombre: currentHotelName },
+            refresh: refresh
           }),
         });
         const result = await res.json();
 
         if (currentProcessId.current !== pid) break;
-        setResults(prev => [...prev, { ...result, tipo: item.t }]);
+        setResults(prev => {
+          const newResults = [...prev, { ...result, tipo: item.t }];
+          localStorage.setItem("velvet_last_results", JSON.stringify(newResults));
+          return newResults;
+        });
 
         // Retraso artificial de 4 segundos para evitar que Google Gemini bloquee
         // por ráfaga de peticiones (Rate Limit 429) en el plan gratuito.
@@ -123,37 +135,55 @@ export default function Home() {
     router.push(`/strategy/${sessionId}`);
   };
 
-  const ejecutarConsultaCustom = async () => {
-    if (!promptText.trim()) return;
+  const ejecutarConsultaCustom = async (overridePrompt?: string, refresh = false) => {
+    const p = overridePrompt || promptText;
+    if (!p.trim()) return;
 
+    setLastUsedPrompt(p);
     const pid = Date.now();
-    currentProcessId.current = pid; // Detiene cualquier bucle de 4-cajas en curso
+    currentProcessId.current = pid;
     setLoading(true);
-    setResults([]); // Borrar cajas anteriores
+    setResults([]);
+    localStorage.removeItem("velvet_last_results");
 
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: promptText,
+          prompt: p + (overridePrompt ? " (Genera una alternativa distinta y creativa)" : ""),
           hotelId: hotelId,
           tipo: "Estrategia Custom",
-          datosHotel: { nombre: hotelName }
+          datosHotel: { nombre: hotelName },
+          refresh: refresh
         }),
       });
       const result = await res.json();
 
       if (currentProcessId.current === pid) {
         setResults([{ ...result, tipo: "Estrategia Custom" }]);
+        localStorage.setItem("velvet_last_results", JSON.stringify([{ ...result, tipo: "Estrategia Custom" }]));
       }
     } catch (e) {
       console.error("Error en consulta custom");
     } finally {
       if (currentProcessId.current === pid) {
         setLoading(false);
-        setPromptText("");
+        if (!overridePrompt) setPromptText("");
       }
+    }
+  };
+
+  const manejarRecarga = async () => {
+    setIsExiting(true);
+    // Esperar a que la animación de fade-out termine (0.5s)
+    await new Promise(r => setTimeout(r, 500));
+    setIsExiting(false);
+    
+    if (results[0]?.tipo === "Estrategia Custom") {
+      ejecutarConsultaCustom(lastUsedPrompt || undefined, true);
+    } else {
+      ejecutarAnalisisCompleto(undefined, undefined, true);
     }
   };
 
@@ -188,12 +218,20 @@ export default function Home() {
 
             {/* Grid de Resultados */}
             {results.length > 0 && (
-              <div className="flex flex-col items-center w-full gap-6 pb-10">
-                {!loading && (
-                  <div className="w-full text-center animate-pulse mb-6">
+              <div className={`flex flex-col items-center w-full gap-6 pb-10 ${isExiting ? "animate-fade-out-up" : ""}`}>
+                {results.length > 0 && (
+                  <div className="w-full flex justify-between items-center mb-6 animate-fade-in z-10">
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
                       Aquí tienes tu estrategia integral
                     </h2>
+                    <button 
+                      onClick={manejarRecarga}
+                      className="flex items-center gap-2 px-6 py-3 bg-slate-800/50 hover:bg-slate-700 border border-slate-700 rounded-2xl text-xs font-bold text-slate-400 hover:text-white transition-all group"
+                      title="Generar una versión alternativa"
+                    >
+                      <span className="group-hover:rotate-180 transition-transform duration-500">🔄</span>
+                      Recargar
+                    </button>
                   </div>
                 )}
                 <div className="grid grid-cols-1 w-full gap-6">
@@ -242,22 +280,19 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
                         <h3 className="text-orange-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
-                        <p className="text-3xl font-black text-white">{selected.coste}</p>
+                        <p className="text-xl font-bold text-white">{selected.coste}</p>
                       </div>
                       <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
                         <h3 className="text-emerald-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Plazo de Implementación</h3>
-                        <p className="text-3xl font-black text-white">{selected.tiempo}</p>
+                        <p className="text-xl font-bold text-white">{selected.tiempo}</p>
                       </div>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-blue-600/5 p-8 rounded-3xl border border-blue-500/20 gap-6">
-                      <div>
-                        <h3 className="text-blue-400 text-[10px] font-bold uppercase mb-1 tracking-widest">ROI Proyectado</h3>
-                        <p className="text-5xl font-black text-blue-500">{selected.roi}</p>
+                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
+                        <h3 className="text-blue-400 text-[10px] font-bold uppercase mb-2 tracking-widest">ROI Proyectado</h3>
+                        <p className="text-xl font-bold text-white">{selected.roi}</p>
                       </div>
-                      <div className="md:text-right">
-                        <h3 className="text-slate-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Target de Mercado</h3>
-                        <p className="text-lg text-slate-300 font-medium max-w-sm">{selected.targeting}</p>
+                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
+                        <h3 className="text-fuchsia-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Target de Mercado</h3>
+                        <p className="text-xl font-bold text-white">{selected.targeting}</p>
                       </div>
                     </div>
 
