@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 
 interface Amenities {
@@ -184,77 +185,88 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] p-8">
-      <Header hotelName={hotelName} />
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
+      <Sidebar />
 
-      {selectedHotel && (
-        <>
-          {/* Servicios */}
-          <div className="space-y-6 mb-8">
-            {SERVICIOS.map((seccion) => (
-              <div
-                key={seccion.categoria}
-                className="bg-white p-6 rounded-2xl border border-[#ae8d6e]"
-              >
-                <h2 className="text-xl font-bold text-[#683110] mb-4">
-                  {seccion.categoria}
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {seccion.items.map((item) => (
-                    <label
-                      key={item.key}
-                      className="flex items-center p-3 bg-[#683110] rounded-lg cursor-pointer hover:bg-[#683110] transition"
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        <Header hotelName={hotelName} pageTitle="Inventario de Servicios" />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            {selectedHotel && (
+              <>
+                {/* Servicios */}
+                <div className="space-y-6 mb-8">
+                  {SERVICIOS.map((seccion) => (
+                    <div
+                      key={seccion.categoria}
+                      className="bg-white p-6 rounded-[2rem] border border-[#ae8d6e]/30 shadow-sm"
                     >
-                      <input
-                        type="checkbox"
-                        checked={amenities[item.key as keyof Amenities] || false}
-                        onChange={() => handleToggle(item.key)}
-                        className="w-5 h-5 cursor-pointer"
-                      />
-                      <span className="ml-3 font-medium">{item.label}</span>
-                    </label>
+                      <h2 className="text-xl font-black text-[#5e0710] mb-6 italic uppercase tracking-tighter">
+                        {seccion.categoria}
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {seccion.items.map((item) => (
+                          <label
+                            key={item.key}
+                            className={`flex items-center p-4 rounded-xl cursor-pointer transition-all border ${
+                              amenities[item.key as keyof Amenities] 
+                                ? "bg-[#5e0710] text-white border-[#5e0710] shadow-md" 
+                                : "bg-white text-[#5e0710] border-[#ae8d6e]/30 hover:border-[#ae8d6e]"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={amenities[item.key as keyof Amenities] || false}
+                              onChange={() => handleToggle(item.key)}
+                              className="w-5 h-5 cursor-pointer accent-white"
+                            />
+                            <span className="ml-4 font-bold uppercase text-xs tracking-widest">{item.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Notas Adicionales */}
-          <div className="bg-white p-6 rounded-2xl border border-[#ae8d6e] mb-8">
-            <label className="block text-lg font-bold mb-4">
-              📝 Notas Adicionales
-            </label>
-            <textarea
-              value={notas}
-              onChange={(e) => setNotas(e.target.value)}
-              placeholder="Agrega cualquier información adicional sobre los servicios..."
-              className="w-full p-4 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] min-h-24"
-            />
-          </div>
+                {/* Notas Adicionales */}
+                <div className="bg-white p-6 rounded-[2rem] border border-[#ae8d6e]/30 mb-8 shadow-sm">
+                  <label className="block text-xs font-black uppercase text-[#ae8d6e] mb-4 tracking-[0.2em]">
+                    📝 Notas Adicionales
+                  </label>
+                  <textarea
+                    value={notas}
+                    onChange={(e) => setNotas(e.target.value)}
+                    placeholder="Agrega cualquier información adicional sobre los servicios..."
+                    className="w-full p-6 bg-[#f5f4f1] text-[#5e0710] rounded-2xl border border-[#ae8d6e]/30 min-h-32 focus:outline-none focus:border-[#5e0710] transition-all"
+                  />
+                </div>
 
-          {/* Botones */}
-          <div className="flex gap-4">
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              className="flex-1 bg-[#683110] hover:bg-[#f5f4f1]0 disabled:bg-[#683110] px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20"
-            >
-              {loading ? "Guardando..." : "✅ Guardar Servicios"}
-            </button>
-            <button
-              onClick={() => router.back()}
-              className="flex-1 bg-[#683110] hover:bg-[#683110] px-8 py-4 rounded-full font-bold transition-all"
-            >
-              ← Volver
-            </button>
-            {success && (
-              <div className="flex items-center text-green-400 font-bold">
-                ✓ Guardado
-              </div>
+                {/* Botones */}
+                <div className="flex flex-col md:flex-row gap-4 pb-12">
+                  <button
+                    onClick={handleSave}
+                    disabled={loading}
+                    className="flex-1 bg-[#5e0710] hover:bg-[#683110] disabled:opacity-50 text-white px-8 py-5 rounded-2xl font-black transition-all shadow-xl shadow-[#5e0710]/20 uppercase tracking-widest text-sm"
+                  >
+                    {loading ? "Guardando..." : "✅ Guardar Inventario"}
+                  </button>
+                  <button
+                    onClick={() => router.back()}
+                    className="flex-1 bg-white border-2 border-[#5e0710] text-[#5e0710] hover:bg-[#5e0710] hover:text-white px-8 py-5 rounded-2xl font-black transition-all uppercase tracking-widest text-sm"
+                  >
+                    ← Volver
+                  </button>
+                  {success && (
+                    <div className="fixed bottom-8 right-8 bg-[#5e0710] text-white px-6 py-3 rounded-full shadow-2xl animate-fade-in font-bold">
+                      ✓ Guardado con éxito
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
-        </>
-      )}
+        </main>
+      </div>
     </div>
   );
 }

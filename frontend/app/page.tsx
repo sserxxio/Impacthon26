@@ -245,9 +245,9 @@ export default function Home() {
       <Sidebar />
 
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        <Header hotelName={hotelName} pageTitle="Dashboard Estratégico" />
         <main className="flex-1 overflow-y-auto relative scroll-smooth">
           <div className="max-w-4xl mx-auto p-4 md:p-8">
-            <Header hotelName={hotelName} />
 
             {loading && (
               <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-20 py-20">
@@ -409,6 +409,7 @@ export default function Home() {
               </div>
             </div>
           )}
+
         </main>
 
         {/* Input Area - Non-fixed, within flex container */}
