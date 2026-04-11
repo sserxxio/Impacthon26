@@ -22,20 +22,31 @@ export default function Home() {
   const [promptText, setPromptText] = useState("");
   const currentProcessId = useRef(0);
   const router = useRouter();
+  const hasAutoRun = useRef(false);
 
   useEffect(() => {
     const storedHotelId = localStorage.getItem("hotelId");
     const storedHotelName = localStorage.getItem("hotelName");
     if (!storedHotelId) { router.push("/login"); return; }
-    setHotelId(parseInt(storedHotelId));
+    
+    const parsedId = parseInt(storedHotelId);
+    setHotelId(parsedId);
     setHotelName(storedHotelName || "Hotel");
+
+    if (!hasAutoRun.current) {
+      hasAutoRun.current = true;
+      ejecutarAnalisisCompleto(parsedId, storedHotelName || "Hotel");
+    }
   }, [router]);
 
-  const ejecutarAnalisisCompleto = async () => {
+  const ejecutarAnalisisCompleto = async (overrideHotelId?: number, overrideHotelName?: string) => {
     const pid = Date.now();
     currentProcessId.current = pid;
     setLoading(true);
     setResults([]);
+
+    const currentHotelId = overrideHotelId || hotelId;
+    const currentHotelName = overrideHotelName || hotelName;
 
     const prompts = [
       {
@@ -65,9 +76,9 @@ export default function Home() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             prompt: item.p,
-            hotelId: hotelId,
+            hotelId: currentHotelId,
             tipo: item.t,
-            datosHotel: { nombre: hotelName }
+            datosHotel: { nombre: currentHotelName }
           }),
         });
         const result = await res.json();
@@ -174,14 +185,9 @@ export default function Home() {
       </header>
 
       {results.length === 0 && !loading && (
-        <div className="my-auto text-center">
-          <h2 className="text-4xl font-bold mb-6 text-slate-200">¿Preparado para optimizar {hotelName}?</h2>
-          <button
-            onClick={ejecutarAnalisisCompleto}
-            className="bg-blue-600 hover:bg-blue-500 px-12 py-5 rounded-2xl font-black text-xl transition-all shadow-2xl shadow-blue-500/20 active:scale-95"
-          >
-            ⚡ LANZAR DIAGNÓSTICO MAESTRO
-          </button>
+        <div className="my-auto flex flex-col items-center animate-pulse">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-blue-400 font-mono tracking-widest text-sm">INICIALIZANDO SISTEMA ORACLE...</p>
         </div>
       )}
 
@@ -189,6 +195,15 @@ export default function Home() {
         <div className="my-auto flex flex-col items-center animate-pulse">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIAS: {results.length}/4</p>
+        </div>
+      )}
+
+      {/* Mensaje de finalización */}
+      {results.length > 0 && !loading && (
+        <div className="w-full max-w-6xl mb-6 text-center animate-pulse">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
+            Aquí tienes una selección de estrategias para ti
+          </h2>
         </div>
       )}
 
