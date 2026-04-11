@@ -109,15 +109,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Error API:", error);
 
-    // Retornar un resultado de contingencia para que el Frontend no se rompa (útil en Hackathons por Rate Limits)
+    // En lugar de devolver datos falsos, devolvemos un error real para que el Frontend lo gestione
     return NextResponse.json({
-      nombre: "Estrategia Local Alternativa",
-      descripcion: "Nuestros servidores IA están procesando demasiadas peticiones. Recomendamos contingencia.",
-      estrategia: "Aprovecha de revisar tus tarifas actuales manualmente en el PMS y realiza comprobaciones de paridad de precios.",
-      coste: "0€",
-      tiempo: "Inmediato",
-      targeting: "Todos los segmentos",
-      roi: "Estable"
-    }, { status: 200 }); // Devolver 200 para que se añada a la pantalla
+      error: "IA_SATURATION",
+      message: "Nuestros servidores de IA están procesando demasiadas peticiones en este momento."
+    }, { status: 503 });
   }
 };

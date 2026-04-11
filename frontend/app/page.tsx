@@ -31,6 +31,7 @@ export default function Home() {
   const currentProcessId = useRef(0);
   const [loadingPhase, setLoadingPhase] = useState("");
   const [progress, setProgress] = useState(0);
+  const [apiError, setApiError] = useState(false);
   const router = useRouter();
   const hasAutoRun = useRef(false);
   const { isOpen } = useSidebar();
@@ -81,7 +82,12 @@ export default function Home() {
       // Fases de carga simuladas para mejor UX
       setLoadingPhase("LEYENDO");
       setProgress(15);
+<<<<<<< Updated upstream
 
+=======
+      setApiError(false);
+      
+>>>>>>> Stashed changes
       for (const item of prompts) {
         if (currentProcessId.current !== pid) break;
 
@@ -105,6 +111,14 @@ export default function Home() {
           }),
         });
 
+<<<<<<< Updated upstream
+=======
+        if (!res.ok) {
+          if (currentProcessId.current === pid) setApiError(true);
+          throw new Error("API Failure");
+        }
+        
+>>>>>>> Stashed changes
         if (currentProcessId.current === pid) {
           setLoadingPhase("PREDICIENDO");
           setProgress(75);
@@ -157,6 +171,10 @@ export default function Home() {
     localStorage.setItem('saved_sessions', JSON.stringify(saved));
     setSavedSessions(saved);
 
+    // Limpiar caché de resultados para que al volver se genere una nueva
+    localStorage.removeItem("velvet_last_results");
+    setResults([]);
+
     router.push(`/strategy/${sessionId}`);
   };
 
@@ -174,7 +192,12 @@ export default function Home() {
     try {
       setLoadingPhase("LEYENDO");
       setProgress(20);
+<<<<<<< Updated upstream
 
+=======
+      setApiError(false);
+      
+>>>>>>> Stashed changes
       const resPromise = fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -199,6 +222,12 @@ export default function Home() {
 
       const res = await resPromise;
       clearInterval(progressInterval);
+
+      if (!res.ok) {
+        if (currentProcessId.current === pid) setApiError(true);
+        throw new Error("API Failure");
+      }
+
       const result = await res.json();
 
       if (currentProcessId.current === pid) {
@@ -285,8 +314,35 @@ export default function Home() {
               </div>
             )}
 
+            {apiError && !loading && (
+              <div className="flex flex-col items-center justify-center py-20 animate-fade-in px-4">
+                 <div className="bg-red-500/10 border border-red-500/30 p-8 md:p-12 rounded-[2.5rem] max-w-xl text-center backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+                   <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
+                   <div className="relative z-10">
+                     <div className="text-6xl mb-6">🛰️</div>
+                     <h2 className="text-3xl font-black text-red-100 uppercase italic tracking-tighter mb-4 leading-none">Servidores Saturados</h2>
+                     <p className="text-red-200/60 mb-8 font-medium italic text-sm md:text-base">
+                       Nuestros agentes de IA están procesando una ráfaga alta de datos en este momento. Por favor, inténtalo de nuevo en unos segundos.
+                     </p>
+                     <button 
+                       onClick={manejarRecarga}
+                       className="bg-red-500 hover:bg-red-400 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-red-500/20 uppercase tracking-widest text-sm hover:scale-105 active:scale-95"
+                     >
+                       🔄 Reintentar Ahora
+                     </button>
+                   </div>
+                 </div>
+              </div>
+            )}
+
+            {!apiError && !loading && results.length < 1 && (
+              <div className="p-8 text-center text-slate-500 py-20 italic">
+                Introduce una consulta para generar tu primera estrategia personalizada.
+              </div>
+            )}
+
             {/* Grid de Resultados */}
-            {results.length > 0 && (
+            {!loading && !apiError && results.length > 0 && (
               <div className={`flex flex-col items-center w-full gap-6 pb-10 ${isExiting ? "animate-fade-out-up" : ""}`}>
                 {results.length > 0 && (
                   <div className="w-full flex justify-between items-center mb-6 animate-fade-in z-10">
@@ -317,12 +373,18 @@ export default function Home() {
                         <h2 className="font-bold text-xl text-[#5e0710] group-hover:text-[#683110] leading-tight uppercase italic mb-2">{res.nombre}</h2>
                         <p className="text-sm text-[#ae8d6e] line-clamp-2">{res.descripcion}</p>
                       </div>
+<<<<<<< Updated upstream
                       <button
                         onClick={(e) => { e.stopPropagation(); iniciarEstrategia(res); }}
                         className="mt-6 w-full bg-[#5e0710] hover:bg-[#5e0710]/90 text-[#f5f4f1] font-bold py-3 rounded-xl transition-all text-sm uppercase tracking-wide border border-[#683110] hover:border-[#ae8d6e]"
                       >
                         Comenzar Estrategia
                       </button>
+=======
+                      <div className="mt-6 flex items-center text-blue-400 text-xs font-bold uppercase tracking-widest gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Ver análisis completo ➔
+                      </div>
+>>>>>>> Stashed changes
                     </div>
                   ))}
                 </div>
