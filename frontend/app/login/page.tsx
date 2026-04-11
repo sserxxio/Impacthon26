@@ -146,10 +146,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#f5f4f1] text-[#683110] p-8">
       <header className="mb-16 text-center">
-        <h1 className="text-5xl font-extrabold text-[#683110] mb-3">
+        <h1 className="text-5xl font-extrabold text-[#c50000] mb-3">
           Velvet
         </h1>
-        <p className="text-xl text-[#683110]">
+        <p className="text-xl text-[#5e0710]">
           Motor de Decisiones de Marketing — IMPACTHON26
         </p>
       </header>
@@ -192,18 +192,18 @@ export default function LoginPage() {
                   <button
                     key={hotel.id}
                     onClick={() => handleSelectHotel(hotel)}
-                    className="w-full p-4 bg-[#683110] hover:bg-[#683110] rounded-xl border border-[#683110] hover:border-[#ae8d6e] transition text-left group"
+                    className="w-full p-4 bg-transparent hover:bg-[#683110]/5 rounded-xl border-2 border-[#683110] transition text-left group"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-bold text-lg text-[#5e0710] group-hover:text-[#683110] transition">
+                        <h3 className="font-bold text-lg text-[#683110] group-hover:text-[#683110] transition">
                           {hotel.hotelName}
                         </h3>
-                        <p className="text-sm text-gray-6">
+                        <p className="text-sm text-[#683110]/70">
                           {hotel.country} • ⭐ {hotel.stars} estrellas
                         </p>
                       </div>
-                      <span className="text-2xl opacity-0 group-hover:opacity-100 transition">→</span>
+                      <span className="text-2xl text-[#683110] opacity-0 group-hover:opacity-100 transition">→</span>
                     </div>
                   </button>
                 ))}
@@ -229,19 +229,19 @@ export default function LoginPage() {
       ) : status ? (
         // PANTALLA DE ESTADO
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#683110]/80 backdrop-blur p-10 rounded-3xl border border-[#ae8d6e]/30 shadow-2xl text-center">
+          <div className="bg-transparent p-10 rounded-3xl border-2 border-[#683110] shadow-2xl text-center">
             {status.status === "pending" ? (
               <>
-                <h2 className="text-3xl font-bold mb-4 text-yellow-400">📋 Completar Cuestionario</h2>
-                <div className="bg-[#ae8d6e]/10 border border-yellow-500/30 p-6 rounded-2xl mb-6">
-                  <p className="text-lg mb-2">
-                    Hotel: <span className="font-bold text-[#683110]">{status.hotel.hotelName}</span>
+                <h2 className="text-3xl font-bold mb-4 text-[#683110]">📋 Completar Cuestionario</h2>
+                <div className="bg-transparent border-2 border-[#683110] p-6 rounded-2xl mb-6">
+                  <p className="text-lg mb-2 text-[#683110]">
+                    Hotel: <span className="font-bold">{status.hotel.hotelName}</span>
                   </p>
-                  <p className="text-[#5e0710]">
+                  <p className="text-[#683110]/80">
                     Aún no has registrado tus servicios y amenidades
                   </p>
                 </div>
-                <p className="text-gray-6 mb-8">
+                <p className="text-[#683110]/70 mb-8">
                   Serás redirigido automáticamente al cuestionario en 10 segundos...
                 </p>
                 <div className="flex gap-4">
@@ -252,13 +252,13 @@ export default function LoginPage() {
                       localStorage.removeItem("hotelId");
                       localStorage.removeItem("hotelName");
                     }}
-                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition"
+                    className="flex-1 border-2 border-[#683110] text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1] px-6 py-3 rounded-full font-bold transition"
                   >
                     ← Cambiar Hotel
                   </button>
                   <button
                     onClick={() => router.push("/amenities")}
-                    className="flex-1 bg-[#ae8d6e] hover:bg-[#ae8d6e] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-yellow-500/20"
+                    className="flex-1 bg-[#683110] text-[#f5f4f1] hover:bg-[#52260d] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-black/20"
                   >
                     → Ir Ahora
                   </button>
@@ -266,12 +266,12 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <h2 className="text-3xl font-bold mb-4 text-emerald-400">✅ Hotel Configurado</h2>
-                <div className="bg-[#683110]/10 border border-[#ae8d6e]/30 p-6 rounded-2xl mb-6">
-                  <p className="text-lg mb-2">
-                    Hotel: <span className="font-bold text-[#683110]">{status.hotel.hotelName}</span>
+                <h2 className="text-3xl font-bold mb-4 text-[#683110]">✅ Hotel Configurado</h2>
+                <div className="bg-transparent border-2 border-[#683110] p-6 rounded-2xl mb-6">
+                  <p className="text-lg mb-2 text-[#683110]">
+                    Hotel: <span className="font-bold">{status.hotel.hotelName}</span>
                   </p>
-                  <p className="text-[#5e0710]">
+                  <p className="text-[#683110]/80">
                     Ya tienes servicios registrados. Listo para analizar.
                   </p>
                 </div>
@@ -283,13 +283,13 @@ export default function LoginPage() {
                       localStorage.removeItem("hotelId");
                       localStorage.removeItem("hotelName");
                     }}
-                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition"
+                    className="flex-1 border-2 border-[#683110] text-[#683110] hover:bg-[#683110] hover:text-[#f5f4f1] px-6 py-3 rounded-full font-bold transition"
                   >
                     ← Otro Hotel
                   </button>
                   <button
                     onClick={handleContinue}
-                    className="flex-1 bg-[#683110] hover:bg-[#683110] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-emerald-500/20"
+                    className="flex-1 bg-[#683110] text-[#f5f4f1] hover:bg-[#52260d] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-black/20"
                   >
                     → Ir al Dashboard
                   </button>
