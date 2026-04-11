@@ -144,12 +144,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-[#5e0710] p-8">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#683110] p-8">
       <header className="mb-16 text-center">
-        <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+        <h1 className="text-5xl font-extrabold text-[#683110] mb-3">
           Velvet
         </h1>
-        <p className="text-xl text-[#5e0710]">
+        <p className="text-xl text-[#683110]">
           Motor de Decisiones de Marketing — IMPACTHON26
         </p>
       </header>
@@ -157,7 +157,7 @@ export default function LoginPage() {
       {!selectedHotel ? (
         // PANTALLA DE BÚSQUEDA
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#683110]/80 backdrop-blur p-10 rounded-3xl border border-[#ae8d6e]/30 shadow-2xl">
+          <div className="bg-white p-10 rounded-3xl border border-[#ae8d6e]/30 shadow-2xl">
             <h2 className="text-3xl font-bold mb-2 text-[#683110]">🔍 Ingresa tu Hotel</h2>
             <p className="text-gray-6 mb-8">
               Busca y selecciona tu hotel para continuar
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 value={searchQuery}
                 onChange={handleSearch}
                 placeholder="Busca por nombre o país..."
-                className="w-full p-4 bg-[#683110] text-[#5e0710] rounded-2xl border border-[#683110] focus:border-[#ae8d6e] focus:outline-none transition text-lg"
+                className="w-full p-4 bg-[#f5f4f1] text-[#683110] rounded-2xl border-2 border-[#683110] focus:border-[#ae8d6e] focus:outline-none transition text-lg placeholder-[#683110]/50"
                 autoFocus
               />
               {loading && (
@@ -219,7 +219,7 @@ export default function LoginPage() {
               </p>
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-blue-500/20"
+                className="w-full bg-[#683110] hover:bg-[#52260d] text-[#f5f4f1] px-6 py-3 rounded-full font-bold transition shadow-lg shadow-black/20"
               >
                  Crear Nuevo Hotel
               </button>
