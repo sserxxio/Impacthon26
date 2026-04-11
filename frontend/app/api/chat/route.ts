@@ -35,13 +35,22 @@ export async function POST(req: NextRequest) {
       }
       
       Si el usuario te dice sugerencias rutinarias ("crea un correo", "haz tabla"), envía "modificaEstrategia": false y "modifiedStrategy": null.
-      Si el usuario TE PIDE cambiar el tiempo, los costes, públicos o cambiar el modelo de estrategia del hotel, DEBES enviar "modificaEstrategia": true y poblar COMPLETAMENTE "modifiedStrategy" con los datos actualizados a nivel global.`
+      Si el usuario TE PIDE cambiar el tiempo, los costes, públicos o cambiar el modelo de estrategia del hotel, DEBES enviar "modificaEstrategia": true y poblar COMPLETAMENTE "modifiedStrategy" con los datos actualizados a nivel global.
+      Cuando el usuario pida cambiar algo, actúa siempre con lógica y coherencia con el contexto del hotel e intenta adaptar el plan solo si es posible, y siempre explica los cambios hechos y el razonamiento sobre estos.`
     });
 
-    const formattedHistory = (history || []).map((msg: any) => ({
+    let formattedHistory = (history || []).map((msg: any) => ({
       role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: JSON.stringify({ reply: msg.content }) }] // Enmascaramos el historial como JSON válido para no confundir al motor
+      parts: [{ text: JSON.stringify({ reply: msg.content }) }]
     }));
+
+    // Gemini requiere que el primer mensaje del historial sea de un 'user'.
+    const firstUserIndex = formattedHistory.findIndex(m => m.role === "user");
+    if (firstUserIndex !== -1) {
+      formattedHistory = formattedHistory.slice(firstUserIndex);
+    } else {
+      formattedHistory = [];
+    }
 
     const chat = model.startChat({
       history: formattedHistory

@@ -48,7 +48,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             onClick={() => router.push("/manage")}
             className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition-all bg-slate-700 text-slate-300 hover:bg-slate-600`}
           >
-              Gestionar Estrategia
+              Gestionar Estrategias
           </button>
 
           <button

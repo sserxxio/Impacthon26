@@ -8,10 +8,10 @@ const memoryCache = new Map(); // Caché en memoria para evitar modificar el Sch
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt: userPrompt, datosHotel, hotelId } = await req.json();
+    const { prompt: userPrompt, datosHotel, hotelId, refresh } = await req.json();
 
     // 🔄 CACHÉ EN MEMORIA: Al no tener variable 'tipo' en BD, cacheamos en RAM usando el prompt
-    if (hotelId) {
+    if (hotelId && !refresh) {
       const cacheKey = `${hotelId}-${userPrompt}`;
       if (memoryCache.has(cacheKey)) {
         console.log(`✅ Devolviendo análisis en memoria para ${cacheKey}`);
