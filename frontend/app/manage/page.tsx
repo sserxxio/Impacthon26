@@ -122,11 +122,12 @@ export default function ManageStrategies() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
       <Sidebar />
 
-      <main className="flex-1 p-8">
-        <Header hotelName={hotelName} />
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        <Header hotelName={hotelName} pageTitle="Gestión de Estrategias" />
+        <main className="flex-1 overflow-y-auto p-8">
 
         {/* Zona de Sesiones de Chat Guardadas */}
         {savedSessions.length > 0 && (
@@ -319,5 +320,6 @@ export default function ManageStrategies() {
 
       </main>
     </div>
+  </div>
   );
 }

@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
+import Header from "../../components/Header";
 import { useSidebar } from "../../context/SidebarContext";
 import MarkdownRenderer from "../../components/MarkdownRenderer";
 
@@ -164,19 +165,13 @@ export default function StrategyPage() {
   return (
     <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen font-sans overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col relative h-full min-w-0">
-
-        {/* Header */}
-        <header className="w-full bg-white border-b border-[#ae8d6e]/30 px-6 py-4 flex justify-between items-center shrink-0 z-10 shadow-sm">
-          <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
-            <h1 className="text-2xl font-black text-[#683110] italic tracking-tighter leading-none">Velvet</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#ae8d6e] bg-[#f5f4f1] px-3 py-1 rounded-full border border-[#ae8d6e]/20 hidden md:block">
-              {strategy.nombre}
-            </span>
-          </div>
-        </header>
+      <div className="flex-1 flex flex-col relative h-full min-w-0 bg-[#f5f4f1]">
+        
+        {/* Header Global */}
+        <Header 
+          pageTitle={strategy.nombre} 
+          hotelName={hotelName}
+        />
 
         {/* Split Container */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#f5f4f1]">

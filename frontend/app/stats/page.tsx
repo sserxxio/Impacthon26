@@ -205,10 +205,12 @@ export default function StatsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 pb-12">
-        <Header hotelName={hotelName} />
+
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        <Header hotelName={hotelName} pageTitle="Estadísticas de Rendimiento" />
+        <main className="flex-1 overflow-y-auto pb-12">
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center p-20">
@@ -830,5 +832,6 @@ export default function StatsPage() {
         </div>
       </main>
     </div>
+  </div>
   );
 }

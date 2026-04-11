@@ -133,16 +133,19 @@ export default function CompetitionPage() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 pb-12 p-8 max-w-6xl mx-auto space-y-8">
-        <Header hotelName={hotelName} />
-        <div className="bg-transparent p-8 rounded-2xl border border-[#ae8d6e]/30">
-          <h1 className="text-4xl font-bold mb-2 text-[#683110]">Análisis de Competencia</h1>
-          <p className="text-[#683110]">
-            Descubre cómo te comparas con los top 2 competidores según tus criterios
-          </p>
-        </div>
+
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+        <Header hotelName={hotelName} pageTitle="Análisis de Competidores" />
+        <main className="flex-1 overflow-y-auto pb-12 p-8 space-y-8">
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="bg-transparent p-8 rounded-2xl border border-[#ae8d6e]/30">
+              <h1 className="text-4xl font-bold mb-2 text-[#683110]">Análisis de Competencia</h1>
+              <p className="text-[#683110]">
+                Descubre cómo te comparas con los top 2 competidores según tus criterios
+              </p>
+            </div>
 
         {/* Filtros */}
         <div className="bg-transparent border border-[#ae8d6e]/30 p-6 rounded-2xl">
@@ -360,7 +363,9 @@ export default function CompetitionPage() {
             </div>
           </div>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
