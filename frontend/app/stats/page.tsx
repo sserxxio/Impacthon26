@@ -171,12 +171,15 @@ export default function StatsPage() {
 
       setAppliedStrategies(startPoints);
       setCompletedStrategies(endPoints);
+      
+      // Liberamos el estado de carga principal para mostrar los gráficos
+      setLoading(false);
 
+      // El análisis se genera en segundo plano mientras el usuario ya ve los gráficos
       await generateAnalysis(id);
     } catch (err) {
       setError("Error al cargar estadísticas");
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };
@@ -338,7 +341,6 @@ export default function StatsPage() {
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "🚀 " + s.nombre, position: 'top', fill: '#22d3ee', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                     {completedStrategies.map((s, idx) => (
@@ -349,7 +351,6 @@ export default function StatsPage() {
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "✅ " + s.nombre, position: 'top', fill: '#a3e635', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                   </BarChart>
@@ -436,22 +437,22 @@ export default function StatsPage() {
                       <ReferenceLine 
                         key={`start-occ-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#22d3ee" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "🚀 " + s.nombre, position: 'top', fill: '#22d3ee', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                     {completedStrategies.map((s, idx) => (
                       <ReferenceLine 
                         key={`end-occ-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#a3e635" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "✅ " + s.nombre, position: 'top', fill: '#a3e635', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                   </AreaChart>
@@ -537,22 +538,22 @@ export default function StatsPage() {
                       <ReferenceLine 
                         key={`start-roi-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#22d3ee" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "🚀 " + s.nombre, position: 'top', fill: '#22d3ee', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                     {completedStrategies.map((s, idx) => (
                       <ReferenceLine 
                         key={`end-roi-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#a3e635" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "✅ " + s.nombre, position: 'top', fill: '#a3e635', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                   </LineChart>
@@ -638,22 +639,22 @@ export default function StatsPage() {
                       <ReferenceLine 
                         key={`start-rep-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#22d3ee" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "🚀 " + s.nombre, position: 'top', fill: '#22d3ee', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                     {completedStrategies.map((s, idx) => (
                       <ReferenceLine 
                         key={`end-rep-${idx}`}
                         x={s.monthName} 
+                        yAxisId="left"
                         stroke="#a3e635" 
                         strokeDasharray="4 4" 
                         strokeWidth={3}
                         isFront={true}
-                        label={{ value: "✅ " + s.nombre, position: 'top', fill: '#a3e635', fontSize: 11, fontWeight: 'bold' }}
                       />
                     ))}
                   </LineChart>
