@@ -177,7 +177,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex">
+    <div className="min-h-screen bg-slate-900 text-white flex">
       <Sidebar />
       
       <main className="flex-1 pb-32 flex flex-col relative">
