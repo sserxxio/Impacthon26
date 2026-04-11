@@ -342,7 +342,7 @@ export default function StrategyPage() {
                       { label: "ROI", value: viewingIndex === -1 ? strategy.roi : history[viewingIndex].data.roi, color: "text-blue-700" },
                       { label: "Target", value: viewingIndex === -1 ? strategy.targeting : history[viewingIndex].data.targeting, color: "text-red-900" },
                     ].map((item, idx) => (
-                      <div key={idx} className="bg-white/80 p-4 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-all flex flex-col justify-center shadow-sm">
+                      <div key={idx} className="bg-white/80 p-4 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-all flex flex-col justify-start shadow-sm">
                         <h3 className={`${item.color} text-[9px] font-bold uppercase mb-1 tracking-widest`}>{item.label}</h3>
                         <p className={`
                           font-black text-[#5e0710] uppercase break-words leading-tight
