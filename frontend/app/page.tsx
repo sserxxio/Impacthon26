@@ -82,12 +82,6 @@ export default function Home() {
       // Fases de carga simuladas para mejor UX
       setLoadingPhase("LEYENDO");
       setProgress(15);
-<<<<<<< Updated upstream
-
-=======
-      setApiError(false);
-      
->>>>>>> Stashed changes
       for (const item of prompts) {
         if (currentProcessId.current !== pid) break;
 
@@ -111,14 +105,6 @@ export default function Home() {
           }),
         });
 
-<<<<<<< Updated upstream
-=======
-        if (!res.ok) {
-          if (currentProcessId.current === pid) setApiError(true);
-          throw new Error("API Failure");
-        }
-        
->>>>>>> Stashed changes
         if (currentProcessId.current === pid) {
           setLoadingPhase("PREDICIENDO");
           setProgress(75);
@@ -192,12 +178,6 @@ export default function Home() {
     try {
       setLoadingPhase("LEYENDO");
       setProgress(20);
-<<<<<<< Updated upstream
-
-=======
-      setApiError(false);
-      
->>>>>>> Stashed changes
       const resPromise = fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -316,22 +296,22 @@ export default function Home() {
 
             {apiError && !loading && (
               <div className="flex flex-col items-center justify-center py-20 animate-fade-in px-4">
-                 <div className="bg-red-500/10 border border-red-500/30 p-8 md:p-12 rounded-[2.5rem] max-w-xl text-center backdrop-blur-xl shadow-2xl relative overflow-hidden group">
-                   <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
-                   <div className="relative z-10">
-                     <div className="text-6xl mb-6">🛰️</div>
-                     <h2 className="text-3xl font-black text-red-100 uppercase italic tracking-tighter mb-4 leading-none">Servidores Saturados</h2>
-                     <p className="text-red-200/60 mb-8 font-medium italic text-sm md:text-base">
-                       Nuestros agentes de IA están procesando una ráfaga alta de datos en este momento. Por favor, inténtalo de nuevo en unos segundos.
-                     </p>
-                     <button 
-                       onClick={manejarRecarga}
-                       className="bg-red-500 hover:bg-red-400 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-red-500/20 uppercase tracking-widest text-sm hover:scale-105 active:scale-95"
-                     >
-                       🔄 Reintentar Ahora
-                     </button>
-                   </div>
-                 </div>
+                <div className="bg-red-500/10 border border-red-500/30 p-8 md:p-12 rounded-[2.5rem] max-w-xl text-center backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
+                  <div className="relative z-10">
+                    <div className="text-6xl mb-6">🛰️</div>
+                    <h2 className="text-3xl font-black text-red-100 uppercase italic tracking-tighter mb-4 leading-none">Servidores Saturados</h2>
+                    <p className="text-red-200/60 mb-8 font-medium italic text-sm md:text-base">
+                      Nuestros agentes de IA están procesando una ráfaga alta de datos en este momento. Por favor, inténtalo de nuevo en unos segundos.
+                    </p>
+                    <button
+                      onClick={manejarRecarga}
+                      className="bg-red-500 hover:bg-red-400 text-white font-black px-10 py-5 rounded-3xl transition-all shadow-xl shadow-red-500/20 uppercase tracking-widest text-sm hover:scale-105 active:scale-95"
+                    >
+                      🔄 Reintentar Ahora
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -373,18 +353,9 @@ export default function Home() {
                         <h2 className="font-bold text-xl text-[#5e0710] group-hover:text-[#683110] leading-tight uppercase italic mb-2">{res.nombre}</h2>
                         <p className="text-sm text-[#ae8d6e] line-clamp-2">{res.descripcion}</p>
                       </div>
-<<<<<<< Updated upstream
-                      <button
-                        onClick={(e) => { e.stopPropagation(); iniciarEstrategia(res); }}
-                        className="mt-6 w-full bg-[#5e0710] hover:bg-[#5e0710]/90 text-[#f5f4f1] font-bold py-3 rounded-xl transition-all text-sm uppercase tracking-wide border border-[#683110] hover:border-[#ae8d6e]"
-                      >
-                        Comenzar Estrategia
-                      </button>
-=======
-                      <div className="mt-6 flex items-center text-blue-400 text-xs font-bold uppercase tracking-widest gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="mt-6 flex items-center text-[#5e0710] text-xs font-bold uppercase tracking-widest gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         Ver análisis completo ➔
                       </div>
->>>>>>> Stashed changes
                     </div>
                   ))}
                 </div>
@@ -457,7 +428,7 @@ export default function Home() {
               <div className="absolute inset-0 rounded-2xl bg-[#f5f4f1]0/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
             </div>
             <button
-              onClick={ejecutarConsultaCustom}
+              onClick={() => ejecutarConsultaCustom()}
               disabled={!promptText.trim()}
               className="bg-[#c50000] hover:bg-[#c50000]/90 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 rounded-2xl flex shrink-0 items-center justify-center font-black transition-all shadow-lg shadow-[#c50000]/700/20 text-[#f5f4f1] text-xl hover:scale-105 active:scale-95"
               title="Recibir consejo instantáneo"
