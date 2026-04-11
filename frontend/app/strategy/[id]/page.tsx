@@ -23,7 +23,7 @@ export default function StrategyPage() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<"details" | "history">("details");
-  const [viewingIndex, setViewingIndex] = useState<number>(-1); 
+  const [viewingIndex, setViewingIndex] = useState<number>(-1);
   const [rightPanelWidth, setRightPanelWidth] = useState(480);
   const [isResizing, setIsResizing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -81,7 +81,7 @@ export default function StrategyPage() {
 
     const existingHistory = localStorage.getItem(`chat_history_${id}`);
     const storedStrategyHistory = localStorage.getItem(`strategy_history_${id}`);
-    
+
     if (storedStrategyHistory) {
       setHistory(JSON.parse(storedStrategyHistory));
     }
@@ -146,7 +146,7 @@ export default function StrategyPage() {
           const safePrev = Array.isArray(prev) ? prev : [];
           return [...safePrev, { data: { ...strategy }, timestamp: Date.now() }];
         });
-        
+
         const newStrategy = { ...strategy, ...data.modifiedStrategy };
         setStrategy(newStrategy);
         localStorage.setItem(`strategy_${id}`, JSON.stringify(newStrategy));
@@ -165,16 +165,16 @@ export default function StrategyPage() {
     <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen font-sans overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col relative h-full min-w-0">
-        
+
         {/* Header */}
         <header className="w-full bg-white border-b border-[#ae8d6e]/30 px-6 py-4 flex justify-between items-center shrink-0 z-10 shadow-sm">
           <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
             <h1 className="text-2xl font-black text-[#683110] italic tracking-tighter leading-none">Velvet</h1>
           </div>
           <div className="flex items-center gap-4">
-             <span className="text-[10px] font-bold uppercase tracking-widest text-[#ae8d6e] bg-[#f5f4f1] px-3 py-1 rounded-full border border-[#ae8d6e]/20 hidden md:block">
-               {strategy.nombre}
-             </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#ae8d6e] bg-[#f5f4f1] px-3 py-1 rounded-full border border-[#ae8d6e]/20 hidden md:block">
+              {strategy.nombre}
+            </span>
           </div>
         </header>
 
@@ -187,11 +187,10 @@ export default function StrategyPage() {
               <div className="max-w-3xl w-full mx-auto space-y-6">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[90%] md:max-w-[85%] p-5 shadow-sm text-[15px] ${
-                      msg.role === "user" 
-                        ? "bg-[#5e0710] text-white rounded-3xl rounded-br-sm" 
-                        : "bg-white text-[#5e0710] border border-[#ae8d6e]/40 rounded-3xl rounded-tl-sm leading-relaxed"
-                    }`}>
+                    <div className={`max-w-[90%] md:max-w-[85%] p-5 shadow-sm text-[15px] ${msg.role === "user"
+                      ? "bg-[#ae8d6e] text-white rounded-3xl rounded-br-sm"
+                      : "bg-white text-[#683110] border border-[#ae8d6e]/40 rounded-3xl rounded-tl-sm leading-relaxed"
+                      }`}>
                       <MarkdownRenderer content={msg.content} />
                     </div>
                   </div>
@@ -237,7 +236,7 @@ export default function StrategyPage() {
           </div>
 
           {/* RESIZER BAR */}
-          <div 
+          <div
             onMouseDown={startResizing}
             className={`w-1 cursor-col-resize hover:bg-[#ae8d6e]/50 transition-colors z-20 hidden lg:block relative group ${isResizing ? 'bg-[#683110] shadow-[0_0_15px_rgba(104,49,16,0.3)]' : 'bg-[#ae8d6e]/20'}`}
           >
@@ -245,12 +244,12 @@ export default function StrategyPage() {
           </div>
 
           {/* RIGHT PANEL: Strategy info area */}
-          <div 
+          <div
             className="w-full lg:block bg-white/40 overflow-y-auto p-6 md:p-8 custom-scrollbar border-l border-[#ae8d6e]/20"
             style={{ width: typeof window !== 'undefined' && window.innerWidth >= 1024 ? `${rightPanelWidth}px` : '100%' }}
           >
             <div className="space-y-8 animate-fade-in h-full flex flex-col">
-              
+
               <header className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
                   <span className="text-[#ae8d6e] font-mono text-[10px] font-bold uppercase tracking-[0.3em] mb-2 block">
@@ -260,17 +259,17 @@ export default function StrategyPage() {
                     {viewMode === "history" ? "Línea de Tiempo" : strategy.nombre}
                   </h2>
                 </div>
-                
+
                 {history.length > 0 && (
-                  <button 
+                  <button
                     onClick={() => {
                       setViewMode(viewMode === "details" ? "history" : "details");
                       if (viewMode === "history") setViewingIndex(-1);
                     }}
                     className={`
                       ml-4 shrink-0 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border
-                      ${viewMode === "history" 
-                        ? "bg-[#5e0710] text-white border-[#5e0710] shadow-lg shadow-[#5e0710]/20" 
+                      ${viewMode === "history"
+                        ? "bg-[#5e0710] text-white border-[#5e0710] shadow-lg shadow-[#5e0710]/20"
                         : "bg-[#f5f4f1] text-[#ae8d6e] border-[#ae8d6e]/40 hover:text-[#5e0710] hover:border-[#ae8d6e]"}
                     `}
                   >
@@ -282,34 +281,34 @@ export default function StrategyPage() {
               {/* MODO HISTORIAL */}
               {viewMode === "history" && (
                 <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar pb-10">
-                   <div className="grid grid-cols-1 gap-4">
-                      <button 
-                        onClick={() => { setViewingIndex(-1); setViewMode("details"); }}
-                        className="bg-[#5e0710]/5 border border-[#5e0710]/20 p-5 rounded-3xl text-left hover:bg-[#5e0710]/10 transition-all group relative overflow-hidden"
-                      >
-                        <span className="text-[#5e0710] text-[9px] font-black uppercase tracking-widest mb-1 block">Versión Actual</span>
-                        <h4 className="text-[#5e0710] font-bold text-lg mb-1 italic">Propuesta Vigente</h4>
-                        <p className="text-[#ae8d6e] text-[10px] uppercase font-bold">Ahora mismo</p>
-                      </button>
+                  <div className="grid grid-cols-1 gap-4">
+                    <button
+                      onClick={() => { setViewingIndex(-1); setViewMode("details"); }}
+                      className="bg-[#5e0710]/5 border border-[#5e0710]/20 p-5 rounded-3xl text-left hover:bg-[#5e0710]/10 transition-all group relative overflow-hidden"
+                    >
+                      <span className="text-[#5e0710] text-[9px] font-black uppercase tracking-widest mb-1 block">Versión Actual</span>
+                      <h4 className="text-[#5e0710] font-bold text-lg mb-1 italic">Propuesta Vigente</h4>
+                      <p className="text-[#ae8d6e] text-[10px] uppercase font-bold">Ahora mismo</p>
+                    </button>
 
-                      {[...history].reverse().map((item, idx) => {
-                        const originalIdx = history.length - 1 - idx;
-                        const date = new Date(item.timestamp);
-                        return (
-                          <button 
-                            key={originalIdx}
-                            onClick={() => { setViewingIndex(originalIdx); setViewMode("details"); }}
-                            className="bg-white/60 border border-[#ae8d6e]/20 p-5 rounded-3xl text-left hover:border-[#683110]/50 hover:bg-white transition-all group"
-                          >
-                            <span className="text-[#ae8d6e] text-[9px] font-black uppercase tracking-widest mb-1 block">Versión #{originalIdx + 1}</span>
-                            <h4 className="text-[#5e0710] font-bold text-lg mb-1 italic">Snapshot Estratégico</h4>
-                            <p className="text-[#ae8d6e] text-[10px] uppercase font-bold">
-                              {date.toLocaleDateString()} - {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {[...history].reverse().map((item, idx) => {
+                      const originalIdx = history.length - 1 - idx;
+                      const date = new Date(item.timestamp);
+                      return (
+                        <button
+                          key={originalIdx}
+                          onClick={() => { setViewingIndex(originalIdx); setViewMode("details"); }}
+                          className="bg-white/60 border border-[#ae8d6e]/20 p-5 rounded-3xl text-left hover:border-[#683110]/50 hover:bg-white transition-all group"
+                        >
+                          <span className="text-[#ae8d6e] text-[9px] font-black uppercase tracking-widest mb-1 block">Versión #{originalIdx + 1}</span>
+                          <h4 className="text-[#5e0710] font-bold text-lg mb-1 italic">Snapshot Estratégico</h4>
+                          <p className="text-[#ae8d6e] text-[10px] uppercase font-bold">
+                            {date.toLocaleDateString()} - {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -325,11 +324,11 @@ export default function StrategyPage() {
                           <p className="text-orange-800/60 text-[10px] italic">Snapshot de la Versión #{viewingIndex + 1}</p>
                         </div>
                       </div>
-                      <button 
+                      <button
                         onClick={() => setViewingIndex(-1)}
                         className="bg-orange-600 text-white text-[9px] font-black px-3 py-2 rounded-lg uppercase hover:scale-105 transition-all shadow-md"
                       >
-                         Restaurar
+                        Restaurar
                       </button>
                     </div>
                   )}
@@ -359,7 +358,7 @@ export default function StrategyPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {viewingIndex === -1 && (
                     <div className="pt-4 opacity-50 text-[10px] font-medium text-[#ae8d6e] italic text-center">
                       Plan dinámico actualizado sincrónicamente con el chat.
