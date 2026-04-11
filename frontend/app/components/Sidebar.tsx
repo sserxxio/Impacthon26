@@ -33,7 +33,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       <aside className={`w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col h-screen sticky top-0 transition-all duration-300 z-[50] ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
-        <h2 className="text-2xl font-bold text-blue-400 mb-8"> </h2>
+        <div className="pt-8"></div>
 
         {/* Navegación de Estrategias - SIEMPRE VISIBLE */}
         <nav className="flex-1 space-y-2">

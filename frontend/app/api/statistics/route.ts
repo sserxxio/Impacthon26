@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generar análisis con Gemini basado en datos REALES
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const ingresoPromedio = Math.round(stats.reduce((s, st) => s + st.ingresos, 0) / stats.length);
     const ocupacionPromedio = Math.round((stats.reduce((s, st) => s + st.ocupacion, 0) / stats.length) * 100) / 100;
@@ -203,7 +203,7 @@ Proporciona un análisis REAL estructurado en JSON con:
       });
     } catch (aiError) {
       console.error("Error en análisis IA:", aiError);
-      
+
       // Si falla (cuota, error de API), devolver análisis por defecto
       const defaultAnalysis = {
         tendencia_general: ocupacionPromedio > 70 ? "Ocupación alta y estable" : "Ocupación moderada con oportunidades de mejora",

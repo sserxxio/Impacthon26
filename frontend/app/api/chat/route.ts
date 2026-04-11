@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { history, message, context } = await req.json();
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" },
       systemInstruction: `Eres Velvet, tu deber es ayudar al hotel ${context?.hotelName || 'este hotel'}.
       Implementas y modificas la estrategia técnica sobre la marcha. Estado actual de la estrategia original:
