@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Header from "../components/Header";
 
 interface Amenities {
   piscina?: boolean;
@@ -184,14 +185,7 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8">
-      <header className="mb-10">
-        <h1 className="text-4xl font-extrabold text-blue-400">
-          📋 Cuestionario de Servicios
-        </h1>
-        <p className="text-slate-400">
-          Completa la información sobre los servicios de tu hotel
-        </p>
-      </header>
+      <Header hotelName={hotelName} />
 
       {/* Selector de Hotel */}
       <div className="mb-8 bg-slate-800 p-6 rounded-2xl border border-slate-700">

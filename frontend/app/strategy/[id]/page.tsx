@@ -107,13 +107,11 @@ export default function StrategyPage() {
   if (!strategy) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex h-screen font-sans overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col relative h-full min-w-0">
-        <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
-          <div className="flex items-center gap-3">
-             {/* Layout flex compensation */}
-          </div>
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col h-screen">
+      <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
+        <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
+          <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">Velvet</h1>
+        </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
           <h2 className="text-lg font-bold text-white uppercase italic truncate max-w-[200px] md:max-w-sm hidden sm:block">

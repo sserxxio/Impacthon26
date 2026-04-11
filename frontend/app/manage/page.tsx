@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
 interface Strategy {
   id: number;
@@ -112,48 +113,9 @@ export default function ManageStrategies() {
       <Sidebar />
 
       <main className="flex-1 p-8">
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold text-blue-400 mb-2">⚙️ Gestionar Estrategias</h1>
-          <p className="text-slate-400">Administra las estrategias que has creado para {hotelName}</p>
-        </header>
+        <Header hotelName={hotelName} />
 
-        {/* Zona de Sesiones de Chat Guardadas */}
-        {savedSessions.length > 0 && (
-          <div className="mb-12 animate-fade-in border-b border-slate-700 pb-12">
-            <h2 className="text-xl font-black text-slate-400 italic mb-6 uppercase tracking-widest">Estrategias de IA en Curso</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {savedSessions.map((session, i) => (
-                <div 
-                  key={i}
-                  onClick={() => router.push(`/strategy/${session.id}`)}
-                  className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-5 rounded-2xl cursor-pointer transition-all hover:border-blue-500/50 shadow-lg flex flex-col gap-3 group relative"
-                  onClick={() => router.push(`/strategy/${session.id}`)}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">{session.tipo || 'Estrategia'}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-500 font-mono">{session.fecha}</span>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setSessionToDelete(session.id); }}
-                        className="text-slate-500 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-colors z-10"
-                        title="Borrar Chat"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <h3 className="font-bold text-md text-white truncate group-hover:text-blue-400 transition-colors uppercase italic">{session.nombre}</h3>
-                  <span className="text-blue-500 text-xs font-bold tracking-widest mt-1 group-hover:translate-x-1 transition-transform">⮑ Abrir Chat</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Botón para crear nueva estrategia manual */}
+        {/* Botón para crear nueva estrategia */}
         <button
           onClick={() => setShowForm(!showForm)}
           className="mb-8 bg-emerald-600 hover:bg-emerald-500 px-6 py-3 rounded-lg font-bold transition-all"
@@ -207,7 +169,7 @@ export default function ManageStrategies() {
           ) : strategies.length === 0 && savedSessions.length === 0 ? (
             <div className="bg-slate-800 border border-slate-700 p-12 rounded-2xl text-center mt-8">
               <p className="text-slate-400 mb-4">No tienes estrategias guardadas aún</p>
-              <p className="text-slate-500 text-sm">Crea una estrategia manual o genera una automáticamente con Oracle IA.</p>
+              <p className="text-slate-500 text-sm">Crea una nueva usando en el apartado de "Añadir estrategia"</p>
             </div>
           ) : (
             strategies.map((strategy) => (

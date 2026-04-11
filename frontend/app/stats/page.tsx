@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
 interface Amenities {
   id: number;
@@ -164,17 +165,7 @@ export default function StatsPage() {
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="flex-1 p-8">
-        <header className="mb-10">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-4xl font-extrabold text-blue-400">📊 Estadísticas</h1>
-              <p className="text-slate-400">Descripción general de tus servicios</p>
-              <p className="text-sm text-slate-500 mt-2">
-                Hotel: <span className="text-emerald-400 font-bold">{hotelName}</span>
-              </p>
-            </div>
-          </div>
-        </header>
+        <Header hotelName={hotelName} />
 
         {error && (
           <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-200 p-4 rounded-xl mb-6">
