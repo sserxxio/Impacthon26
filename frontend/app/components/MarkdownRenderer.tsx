@@ -10,7 +10,7 @@ interface MarkdownRendererProps {
 
 export default function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
   return (
-    <div className={`prose  max-w-none ${className}`}>
+    <div className={`max-w-none ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -35,7 +35,7 @@ export default function MarkdownRenderer({ content, className = "" }: MarkdownRe
           thead: ({ children }) => <thead className="bg-[#683110]/80">{children}</thead>,
           th: ({ children }) => <th className="p-3 text-[10px] font-black uppercase text-[#f5f4f1] tracking-widest border-b border-[#683110]">{children}</th>,
           td: ({ children }) => <td className="p-3 text-sm text-[#683110] border-b border-[#683110]/50">{children}</td>,
-          code: ({ children }) => <code className="bg-[#683110] px-1.5 py-0.5 rounded text-[#ae8d6e] font-mono text-xs">{children}</code>,
+          a: ({ children, href }) => <a href={href} className="text-[#c50000] no-underline hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
         }}
       >
         {content}

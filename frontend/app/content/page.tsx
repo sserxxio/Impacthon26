@@ -57,22 +57,22 @@ export default function ContentGeneratorPage() {
   return (
     <div className="min-h-screen bg-[#f5f4f1] text-[#683110] flex h-screen overflow-hidden">
       <Sidebar />
-      
+
       <main className="flex-1 overflow-y-auto relative scroll-smooth flex flex-col min-w-0">
         <div className="max-w-4xl mx-auto p-4 md:p-8 w-full">
           <Header hotelName={hotelName} />
-          
+
           <div className="bg-transparent p-8 rounded-2xl border border-[#ae8d6e]/30 mb-8 flex justify-between items-center">
             <div>
               <h1 className="text-4xl font-black mb-2 text-[#683110] italic tracking-tighter uppercase">Inteligencia de Contenidos</h1>
               <p className="text-[#683110]/80 font-medium">
-                {activeTab === "hub" 
+                {activeTab === "hub"
                   ? "Automatiza reportes, marketing y gestión de clientes utilizando IA Generativa."
                   : "Generador asistido conectado a los datos reales de tu hotel."}
               </p>
             </div>
             {activeTab !== "hub" && (
-              <button 
+              <button
                 onClick={() => { setActiveTab("hub"); setGeneratedContent(null); setInputValue(""); }}
                 className="bg-[#f5f4f1] border-2 border-[#5e0710] text-[#5e0710] hover:bg-[#5e0710] hover:text-[#f5f4f1] px-5 py-2 rounded-xl font-bold transition-all text-sm uppercase tracking-wider"
               >
@@ -119,17 +119,7 @@ export default function ContentGeneratorPage() {
                 </div>
               </div>
 
-              {/* Tarjeta 4: Estrategias Avanzadas */}
-              <div className="bg-gradient-to-br from-[#c50000] to-[#5e0710] border border-[#c50000] rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:shadow-[#c50000]/20 transition-all group cursor-pointer" onClick={() => router.push('/manage')}>
-                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform origin-left drop-shadow-md">🎯</div>
-                <h2 className="text-2xl font-black italic uppercase text-[#f5f4f1] mb-2 tracking-tighter">Estrategias (Velvet)</h2>
-                <p className="text-red-100 font-medium mb-8 min-h-[48px]">
-                  Accede al panel principal para definir tus estrategias de Revenue y Competencia.
-                </p>
-                <div className="flex items-center text-white text-sm font-bold uppercase tracking-widest gap-2">
-                  Ir al Administrador <span className="text-xl">→</span>
-                </div>
-              </div>
+
             </div>
           )}
 
@@ -151,25 +141,25 @@ export default function ContentGeneratorPage() {
                     {activeTab === "reviews" && "Pega la reseña del cliente aquí"}
                     {activeTab === "reporte" && "¿Qué foco te interesa? (Opcional)"}
                   </label>
-                  <textarea 
+                  <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={
-                       activeTab === "marketing" ? "Ej: Promocionar nuestro nuevo Cocktail de bienvenida. Tono divertido." :
-                       activeTab === "reviews" ? "Ej: La habitación estaba sucia y la recepción ausente..." :
-                       "Ej: Analiza solo el impacto de la Ocupación frente al ADR."
+                      activeTab === "marketing" ? "Ej: Promocionar nuestro nuevo Cocktail de bienvenida. Tono divertido." :
+                        activeTab === "reviews" ? "Ej: La habitación estaba sucia y la recepción ausente..." :
+                          "Ej: Analiza solo el impacto de la Ocupación frente al ADR."
                     }
                     className="w-full bg-[#f5f4f1] border border-[#ae8d6e]/50 rounded-2xl px-6 py-4 text-[#5e0710] font-medium placeholder-[#683110]/50 min-h-[120px] focus:outline-none focus:border-[#683110] focus:ring-1 focus:ring-[#683110]/20 transition-all"
                   />
                 </div>
 
-                <button 
+                <button
                   onClick={handleGenerate}
                   disabled={loading || (activeTab === "reviews" && !inputValue.trim())}
                   className="w-full bg-[#5e0710] hover:bg-[#c50000] disabled:opacity-50 text-[#f5f4f1] font-black py-5 rounded-2xl transition-all shadow-xl shadow-[#5e0710]/20 uppercase tracking-[0.2em] hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-3"
                 >
                   {loading ? (
-                    <span className="animate-pulse">Procesando I.A...</span>
+                    <span className="animate-pulse">Procesando I.A</span>
                   ) : (
                     <>✨ Generar Resultado</>
                   )}
@@ -177,10 +167,10 @@ export default function ContentGeneratorPage() {
               </div>
 
               {loading && (
-                 <div className="mt-12 py-12 border-t border-[#ae8d6e]/20 text-center animate-pulse">
-                    <div className="text-4xl mb-4">🧠</div>
-                    <p className="text-[#683110] font-bold uppercase tracking-widest text-sm">Consultando al Oráculo...</p>
-                 </div>
+                <div className="mt-12 py-12 border-t border-[#ae8d6e]/20 text-center animate-pulse">
+                  <div className="text-4xl mb-4">🧠</div>
+                  <p className="text-[#683110] font-bold uppercase tracking-widest text-sm">Consultando al Oráculo...</p>
+                </div>
               )}
 
               {generatedContent && !loading && (
@@ -188,14 +178,14 @@ export default function ContentGeneratorPage() {
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f5f4f1] border border-[#ae8d6e] px-4 py-1 rounded-full text-[10px] font-black uppercase text-[#683110] tracking-widest shadow-sm">
                     Resultado Generado
                   </div>
-                  <div className="bg-[#f5f4f1]/50 p-8 rounded-3xl border border-[#ae8d6e]/50">
+                  <div className="bg-[#f5f4f1]/50 p-8 rounded-3xl border border-[#ae8d6e]/50 max-h-[60vh] overflow-y-auto custom-scrollbar">
                     <MarkdownRenderer content={generatedContent} />
                   </div>
-                  <button 
+                  <button
                     onClick={() => navigator.clipboard.writeText(generatedContent)}
                     className="mt-6 w-full bg-white border-2 border-[#5e0710] text-[#5e0710] hover:bg-[#5e0710] hover:text-white font-bold py-4 rounded-2xl transition-all uppercase tracking-widest text-sm"
                   >
-                     Copiar al Portapapeles
+                    Copiar al Portapapeles
                   </button>
                 </div>
               )}
