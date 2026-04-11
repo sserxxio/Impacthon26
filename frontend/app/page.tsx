@@ -367,7 +367,7 @@ export default function Home() {
           {selected && (
             <div className="fixed inset-0 bg-[#683110]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
               <div className="bg-white border border-[#ae8d6e]/30 w-full max-w-5xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative max-h-[90vh] flex flex-col">
-                <button onClick={() => setSelected(null)} className="absolute top-8 right-8 text-[#f5f4f1] hover:text-[#5e0710] text-2xl transition-colors z-20">✕</button>
+                <button onClick={() => setSelected(null)} className="absolute top-8 right-8 bg-[#f5f4f1] text-[#683110] hover:bg-[#5e0710] hover:text-white w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all z-20 shadow-sm border border-[#ae8d6e]/30">✕</button>
 
                 <div className="overflow-y-auto pr-4 custom-scrollbar">
                   <span className="text-[#683110] font-mono text-xs font-bold uppercase tracking-[0.3em]">{selected.tipo}</span>
