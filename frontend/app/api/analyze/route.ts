@@ -4,41 +4,18 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const memoryCache = new Map(); // Caché en memoria para evitar modificar el Schema de BD
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt: userPrompt, datosHotel, hotelId, tipo } = await req.json();
+    const { prompt: userPrompt, datosHotel, hotelId } = await req.json();
 
-    // 🔄 CACHÉ: Buscar análisis previo si existe hotelId y tipo
+    // 🔄 CACHÉ EN MEMORIA: Al no tener variable 'tipo' en BD, cacheamos en RAM usando el prompt
     if (hotelId) {
-      const intHotelId = parseInt(hotelId);
-      const analisisExistente = await prisma.analysis.findFirst({
-        where: { hotelId: intHotelId, tipo: tipo },
-        orderBy: { createdAt: 'desc' }
-      });
-
-      // Si existe y fue creado hace menos de 24h, devolverlo (caché)
-      if (analisisExistente) {
-        const ahora = new Date();
-        const hace24h = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
-
-        if (analisisExistente.createdAt > hace24h) {
-          console.log(`✅ Devolviendo análisis cacheado para hotel ${intHotelId}`);
-          const recomendaciones = analisisExistente.recomendaciones
-            ? JSON.parse(analisisExistente.recomendaciones)
-            : {};
-
-          return NextResponse.json({
-            nombre: analisisExistente.anuncio?.substring(0, 20),
-            descripcion: analisisExistente.anuncio,
-            estrategia: analisisExistente.estrategia,
-            coste: recomendaciones.coste || "N/A",
-            tiempo: recomendaciones.tiempo || "N/A",
-            targeting: analisisExistente.segmentoObjeto,
-            roi: analisisExistente.diferencadores,
-            cached: true
-          });
-        }
+      const cacheKey = `${hotelId}-${userPrompt}`;
+      if (memoryCache.has(cacheKey)) {
+        console.log(`✅ Devolviendo análisis en memoria para ${cacheKey}`);
+        return NextResponse.json({ ...memoryCache.get(cacheKey), cached: true });
       }
     }
 
@@ -64,12 +41,14 @@ export async function POST(req: NextRequest) {
     const text = result.response.text().replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(text);
 
-    // Guardar en BD opcionalmente (puedes ajustar los campos de tu Prisma aquí)
+    // Guardar en BD opcionalmente sin la variable 'tipo'
     if (hotelId) {
+      const cacheKey = `${hotelId}-${userPrompt}`;
+      memoryCache.set(cacheKey, parsed); // Guardar en caché rápida
+
       await prisma.analysis.create({
         data: {
           hotelId: parseInt(hotelId),
-          tipo: tipo,
           estrategia: parsed.estrategia,
           anuncio: parsed.descripcion || parsed.nombre || "Análisis generado",
           segmentoObjeto: parsed.targeting,
