@@ -187,29 +187,6 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
     <div className="min-h-screen bg-slate-900 text-white p-8">
       <Header hotelName={hotelName} />
 
-      {/* Selector de Hotel */}
-      <div className="mb-8 bg-slate-800 p-6 rounded-2xl border border-slate-700">
-        <label className="block text-lg font-bold mb-4">Hotel:</label>
-        {hotelName ? (
-          <div className="w-full p-3 bg-emerald-500/20 text-emerald-300 rounded-lg border border-emerald-500">
-            ✓ {hotelName}
-          </div>
-        ) : (
-          <select
-            value={selectedHotel}
-            onChange={(e) => setSelectedHotel(e.target.value)}
-            className="w-full p-3 bg-slate-700 text-white rounded-lg border border-slate-600"
-          >
-            <option value="">-- Selecciona un hotel --</option>
-            {hotels.map((hotel) => (
-              <option key={hotel.id} value={hotel.id}>
-                {hotel.hotelName}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
       {selectedHotel && (
         <>
           {/* Servicios */}

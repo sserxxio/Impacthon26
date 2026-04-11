@@ -210,17 +210,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {searchQuery.trim().length > 0 && searchResults.length === 0 && !loading && (
-              <div className="text-center py-8">
-                <p className="text-slate-400 mb-4">No se encontraron hoteles</p>
-                <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full font-bold transition shadow-lg shadow-blue-500/20"
-                >
-                Crear Nuevo Hotel
-                </button>
-              </div>
-            )}
+            
 
             {/* Botón para crear hotel siempre visible */}
             <div className="mt-8 pt-8 border-t border-slate-700">

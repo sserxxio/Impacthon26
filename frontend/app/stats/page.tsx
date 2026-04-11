@@ -818,6 +818,16 @@ export default function StatsPage() {
             )}
           </div>
         )}
+
+        {/* Botón Editar Amenidades */}
+        <div className="mx-8 flex justify-center mb-8">
+          <button
+            onClick={() => router.push("/amenities")}
+            className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 px-8 py-4 rounded-2xl font-bold text-white transition-all shadow-lg hover:shadow-orange-500/50 transform hover:scale-105 uppercase tracking-widest text-sm border border-orange-400/50"
+          >
+            ✏️ Editar Amenidades
+          </button>
+        </div>
       </main>
     </div>
   );
