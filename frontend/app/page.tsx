@@ -227,29 +227,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Zona de Sesiones Guardadas */}
-      {savedSessions.length > 0 && (
-        <div className="w-full max-w-6xl my-12 animate-fade-in">
-          <h2 className="text-2xl font-black text-slate-400 italic mb-6 uppercase tracking-widest text-center">Tus Estrategias en Curso</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {savedSessions.map((session, i) => (
-              <div 
-                key={i}
-                onClick={() => router.push(`/strategy/${session.id}`)}
-                className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-5 rounded-2xl cursor-pointer transition-all hover:border-blue-500/50 shadow-lg flex flex-col gap-3 group"
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black px-3 py-1 bg-slate-900 text-slate-300 rounded-lg">{session.tipo || 'Estrategia'}</span>
-                  <span className="text-xs text-slate-500 font-mono">{session.fecha}</span>
-                </div>
-                <h3 className="font-bold text-md text-white truncate group-hover:text-blue-400 transition-colors uppercase italic">{session.nombre}</h3>
-                <span className="text-blue-500 text-xs font-bold tracking-widest mt-1 group-hover:translate-x-1 transition-transform">⮑ Continuar Ejecución</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Popup / Modal */}
       {selected && (
         <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
@@ -300,7 +277,7 @@ export default function Home() {
       </main>
 
       {/* Fixed Prompt Box */}
-      <div className="fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-40 pl-[17rem]">
         <div className="max-w-4xl mx-auto flex gap-4 items-center">
           <input
             type="text"

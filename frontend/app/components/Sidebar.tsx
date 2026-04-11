@@ -17,7 +17,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col h-screen sticky top-0">
+    <aside className="w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col h-screen sticky top-0 z-[100] shrink-0">
       <h2 className="text-2xl font-bold text-blue-400 mb-8">📊 ORACLE AI</h2>
 
       {/* Navegación de Estrategias - SIEMPRE VISIBLE */}

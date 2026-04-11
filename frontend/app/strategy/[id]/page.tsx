@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Sidebar from "../../components/Sidebar";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -106,13 +107,15 @@ export default function StrategyPage() {
   if (!strategy) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col h-screen">
-      <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
-        <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/")}>
-          <h1 className="text-2xl font-black text-blue-500 italic tracking-tighter leading-none">ORACLE AI</h1>
-        </div>
+    <div className="min-h-screen bg-slate-950 text-white flex h-screen font-sans overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col relative h-full min-w-0">
+        <header className="w-full bg-slate-900 border-b border-slate-800 p-6 flex justify-between items-center shrink-0 z-10 shadow-md">
+          <div className="flex items-center gap-3">
+             {/* Layout flex compensation */}
+          </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3">
           <h2 className="text-lg font-bold text-white uppercase italic truncate max-w-[200px] md:max-w-sm hidden sm:block">
             {strategy.nombre}
           </h2>
@@ -127,10 +130,10 @@ export default function StrategyPage() {
         <button onClick={() => router.push("/")} className="text-slate-500 hover:text-white transition-colors text-sm font-bold bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
           Cerrar Sesión
         </button>
-      </header>
+        </header>
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-8 max-w-4xl w-full mx-auto">
-        {messages.map((msg, idx) => (
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-40 max-w-4xl w-full mx-auto relative z-0">
+          {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[90%] md:max-w-[85%] p-5 shadow-sm text-[15px] ${msg.role === "user" ? "bg-blue-600 text-white rounded-3xl rounded-br-sm" : "bg-slate-800 text-slate-200 border border-slate-700 rounded-3xl rounded-tl-sm leading-relaxed whitespace-pre-wrap"}`}>
               {msg.content}
@@ -146,12 +149,12 @@ export default function StrategyPage() {
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
-      </main>
+          <div ref={messagesEndRef} />
+        </main>
 
-      <div className="bg-slate-900 border-t border-slate-800 p-4 shrink-0 w-full z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-4xl mx-auto flex gap-3 items-center">
-          <input
+        <div className="fixed bottom-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] pl-[17rem]">
+          <div className="max-w-4xl mx-auto flex gap-3 items-center">
+            <input
             type="text"
             placeholder="Pregunta o pide detalles de implementación..."
             value={inputValue}
@@ -210,6 +213,7 @@ export default function StrategyPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
