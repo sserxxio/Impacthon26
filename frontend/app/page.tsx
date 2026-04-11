@@ -29,6 +29,8 @@ export default function Home() {
   const [lastUsedPrompt, setLastUsedPrompt] = useState<string | null>(null);
   const [savedSessions, setSavedSessions] = useState<any[]>([]);
   const currentProcessId = useRef(0);
+  const [loadingPhase, setLoadingPhase] = useState("");
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
   const hasAutoRun = useRef(false);
   const { isOpen } = useSidebar();
@@ -76,8 +78,20 @@ export default function Home() {
     ];
 
     try {
+      // Fases de carga simuladas para mejor UX
+      setLoadingPhase("LEYENDO");
+      setProgress(15);
+      
       for (const item of prompts) {
         if (currentProcessId.current !== pid) break;
+
+        // Avanzar fase después del primer "reading"
+        setTimeout(() => {
+          if (currentProcessId.current === pid) {
+            setLoadingPhase("ANALIZANDO");
+            setProgress(45);
+          }
+        }, 1500);
 
         const res = await fetch("/api/analyze", {
           method: "POST",
@@ -90,7 +104,18 @@ export default function Home() {
             refresh: refresh
           }),
         });
+        
+        if (currentProcessId.current === pid) {
+          setLoadingPhase("PREDICIENDO");
+          setProgress(75);
+        }
+
         const result = await res.json();
+
+        if (currentProcessId.current === pid) {
+          setLoadingPhase("CREANDO");
+          setProgress(95);
+        }
 
         if (currentProcessId.current !== pid) break;
         setResults(prev => {
@@ -100,7 +125,6 @@ export default function Home() {
         });
 
         // Retraso artificial de 4 segundos para evitar que Google Gemini bloquee
-        // por ráfaga de peticiones (Rate Limit 429) en el plan gratuito.
         await new Promise(r => setTimeout(r, 4000));
       }
     } catch (e) {
@@ -108,6 +132,7 @@ export default function Home() {
     } finally {
       if (currentProcessId.current === pid) {
         setLoading(false);
+        setProgress(100);
       }
     }
   };
@@ -147,7 +172,10 @@ export default function Home() {
     localStorage.removeItem("velvet_last_results");
 
     try {
-      const res = await fetch("/api/analyze", {
+      setLoadingPhase("LEYENDO");
+      setProgress(20);
+      
+      const resPromise = fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -158,6 +186,19 @@ export default function Home() {
           refresh: refresh
         }),
       });
+
+      // Animación de progreso mientras esperamos la respuesta real
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev < 40) { setLoadingPhase("ANALIZANDO"); return prev + 1; }
+          if (prev < 70) { setLoadingPhase("PREDICIENDO"); return prev + 1; }
+          if (prev < 90) { setLoadingPhase("CREANDO"); return prev + 1; }
+          return prev;
+        });
+      }, 100);
+
+      const res = await resPromise;
+      clearInterval(progressInterval);
       const result = await res.json();
 
       if (currentProcessId.current === pid) {
@@ -169,6 +210,7 @@ export default function Home() {
     } finally {
       if (currentProcessId.current === pid) {
         setLoading(false);
+        setProgress(100);
         if (!overridePrompt) setPromptText("");
       }
     }
@@ -198,20 +240,47 @@ export default function Home() {
           <div className="max-w-4xl mx-auto p-4 md:p-8">
             <Header hotelName={hotelName} />
 
-            {results.length === 0 && !loading && (
-              <div className="flex items-center justify-center py-20">
-                <div className="flex flex-col items-center animate-pulse">
-                  <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="text-blue-400 font-mono tracking-widest text-sm">INICIALIZANDO SISTEMA VELVET...</p>
-                </div>
-              </div>
-            )}
+            {loading && (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-20 py-20">
+                <div className="w-full max-w-md text-center">
+                  {/* Icono Dinámico */}
+                  <div className="relative mb-8 flex justify-center">
+                    <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse"></div>
+                    <div className="relative bg-slate-800 border-2 border-slate-700 p-6 rounded-3xl shadow-2xl animate-bounce">
+                      <span className="text-4xl">
+                        {loadingPhase === "LEYENDO" ? "📖" : 
+                         loadingPhase === "ANALIZANDO" ? "🧠" : 
+                         loadingPhase === "PREDICIENDO" ? "🔮" : "✍️"}
+                      </span>
+                    </div>
+                  </div>
 
-            {loading && results.length < 1 && (
-              <div className="flex items-center justify-center py-20">
-                <div className="flex flex-col items-center animate-pulse">
-                  <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="text-blue-400 font-mono tracking-widest text-sm">GENERANDO ESTRATEGIA PRINCIPAL...</p>
+                  <h2 className="text-2xl font-black mb-2 italic uppercase tracking-widest text-white">
+                    {loadingPhase === "LEYENDO" ? "Lectura de Contexto" : 
+                     loadingPhase === "ANALIZANDO" ? "Análisis de Datos" : 
+                     loadingPhase === "PREDICIENDO" ? "Modelo Predictivo" : "Redactando Estrategia"}
+                  </h2>
+                  
+                  <p className="text-slate-400 text-sm mb-8 font-medium h-5">
+                    {loadingPhase === "LEYENDO" ? "Extrayendo KPIs y equipamiento del hotel..." : 
+                     loadingPhase === "ANALIZANDO" ? "Identificando patrones en el histórico..." : 
+                     loadingPhase === "PREDICIENDO" ? "Generando proyecciones para el corto plazo..." : "Finalizando tu propuesta maestra..."}
+                  </p>
+
+                  {/* Barra de Progreso */}
+                  <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-[2px] mb-2">
+                     <div 
+                      className="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500 ease-out relative"
+                      style={{ width: `${progress}%` }}
+                     >
+                       <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                     </div>
+                  </div>
+                  
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-slate-500">
+                     <span>Fase: {loadingPhase}</span>
+                     <span>{progress}%</span>
+                  </div>
                 </div>
               </div>
             )}
