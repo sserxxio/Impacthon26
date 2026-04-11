@@ -19,23 +19,66 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // 🏨 RECUPERAR CONTEXTO REAL DEL HOTEL
+    let contextStr = "";
+    const currentDate = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+    if (hotelId) {
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: parseInt(hotelId) },
+        include: {
+          amenities: true,
+          statistics: {
+            take: 6,
+            orderBy: {
+              year: 'desc',
+            }
+          }
+        }
+      });
+
+      if (hotel) {
+        // Ordenar estadísticas por año y mes descendente manualmente para seguridad
+        const sortedStats = hotel.statistics.sort((a, b) => (b.year * 12 + b.month) - (a.year * 12 + a.month));
+
+        const statsStr = sortedStats.map(s =>
+          `${s.month}/${s.year}: Ocupación ${s.ocupacion}%, ADR ${s.adr}€, Ingresos ${s.ingresos}€`
+        ).join(" | ");
+
+        const ams = hotel.amenities ? Object.entries(hotel.amenities)
+          .filter(([k, v]) => v === true && k !== 'id' && k !== 'hotelId' && typeof v === 'boolean')
+          .map(([k]) => k).join(", ") : "Básicas";
+
+        contextStr = `
+        --- CONTEXTO REAL DEL HOTEL (Fecha Actual: ${currentDate}) ---
+        Nombre: ${hotel.hotelName} | Estrellas: ${hotel.stars} | Ciudad: ${hotel.cityName}
+        Equipamiento: ${ams}
+        Histórico Reciente: ${statsStr}
+        ----------------------------------------------------------
+        `;
+      }
+    }
+
     // 🤖 Si no hay caché válido, llamar a Gemini
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      systemInstruction: `Eres un consultor senior de revenue y marketing hotelero.
+      systemInstruction: `Eres un consultor senior de revenue y marketing hotelero experto en análisis de datos.
+      Tu misión es generar estrategias personalizadas basadas en el CONTEXTO REAL del hotel proporcionado.
+      Utiliza los datos de ocupación, ADR y amenidades para que la propuesta sea factible y específica para la temporada actual.
+      
       Tu salida DEBE SER UNICAMENTE UN JSON con este formato:
       {
         "nombre": "Nombre corto (3-5 palabras)",
         "descripcion": "Resumen de 1 frase",
-        "estrategia": "Detalle técnico de la mejora",
+        "estrategia": "Detalle técnico de la mejora basado en el contexto",
         "coste": "Estimación en €",
         "tiempo": "Plazo de ejecución",
-        "targeting": "Público objetivo",
+        "targeting": "Público objetivo específico",
         "roi": "Porcentaje esperado"
       }`
     });
 
-    const fullPrompt = `Analiza para el hotel ${datosHotel?.nombre || 'genérico'}: ${userPrompt}`;
+    const fullPrompt = `${contextStr}\n\nAnaliza y genera una estrategia para la siguiente petición: ${userPrompt}`;
 
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text().replace(/```json|```/g, "").trim();
