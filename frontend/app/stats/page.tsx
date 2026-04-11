@@ -248,7 +248,7 @@ export default function StatsPage() {
                   Ocupación Promedio
                 </p>
                 <p className="text-3xl font-bold text-[#683110]">
-                  {summary.avgOcupacion}%
+                  {summary.avgOcupacion.toFixed(1)}%
                 </p>
               </div>
 
@@ -257,7 +257,7 @@ export default function StatsPage() {
                   ROI Promedio
                 </p>
                 <p className="text-3xl font-bold text-[#683110]">
-                  {summary.avgRoi}%
+                  {summary.avgRoi.toFixed(1)}%
                 </p>
               </div>
 

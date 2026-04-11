@@ -55,18 +55,21 @@ function generateMockStatistics(hotelId: number, month: number, year: number) {
   const finalOcupacion = Math.round(Math.min(98, ocupacion * (1 + (growthMultiplier - 1) * 0.5)) * 100) / 100;
 
   return {
+    hotelId,
     month,
     year,
-    hotelId,
+    // Finanzas
     ingresos: finalIngresos,
     costes: Math.round(costes),
     marketingGasto: Math.round(marketingGasto),
     utilidad: finalUtilidad,
-    roi: finalUtilidad > 0 ? Math.round((finalUtilidad / costes) * 10000) / 100 : -20,
-    ocupacion: finalOcupacion,
-    adr: Math.round(adr * 100) / 100,
+    roi: finalUtilidad > 0 ? Math.round((finalUtilidad / costes) * 1000) / 10 : -20,
+    // Operativo
+    ocupacion: Math.round(finalOcupacion * 10) / 10,
+    adr: Math.round(adr * 10) / 10,
     reservas,
     huespedes: Math.round(huespedes),
+    // Reputación
     puntuacion: Math.round(puntuacion * 10) / 10,
     resenas,
   };
@@ -82,7 +85,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "hotelId requerido" }, { status: 400 });
     }
 
-    // Obtener hotel
     const hotel = await prisma.hotel.findUnique({
       where: { id: hotelId },
     });
@@ -91,48 +93,45 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Hotel no encontrado" }, { status: 404 });
     }
 
-    // Generar últimos N meses de estadísticas
-    // Definimos el punto final solicitado por el usuario: Enero 2027
-    const targetYear = 2027;
-    const targetMonth = 1;
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
 
-    const stats = [];
+    const statsArray: any[] = [];
     for (let i = months - 1; i >= 0; i--) {
-      let month = targetMonth - i;
-      let year = targetYear;
+      let month = currentMonth - i;
+      let year = currentYear;
 
       while (month < 1) {
         month += 12;
         year--;
       }
 
-      // Buscar en BD o generar (usar upsert para evitar duplicados)
       const stat = await prisma.statistics.upsert({
         where: {
           hotelId_month_year: { hotelId, month, year },
         },
         create: generateMockStatistics(hotelId, month, year),
-        update: {}, // No actualizar si ya existe
+        update: {},
       });
 
-      stats.push(stat);
+      statsArray.push(stat);
     }
     
-    // Garantizar que los datos estén ordenados cronológicamente (Enero 2026 -> Enero 2027)
-    stats.sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
+    // Ordenar cronológicamente
+    statsArray.sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
 
-    // Calcular resumen
     const summary = {
-      avgIngresos: Math.round(stats.reduce((s, st) => s + st.ingresos, 0) / stats.length),
-      avgOcupacion: Math.round((stats.reduce((s, st) => s + st.ocupacion, 0) / stats.length) * 100) / 100,
-      avgRoi: Math.round((stats.reduce((s, st) => s + st.roi, 0) / stats.length) * 100) / 100,
-      totalUtilidad: Math.round(stats.reduce((s, st) => s + st.utilidad, 0)),
-      bestMonth: stats.reduce((best, st) => (st.utilidad > best.utilidad ? st : best)),
+      avgIngresos: statsArray.length > 0 ? Math.round(statsArray.reduce((s, st) => s + st.ingresos, 0) / statsArray.length) : 0,
+      avgOcupacion: statsArray.length > 0 ? Math.round((statsArray.reduce((s, st) => s + st.ocupacion, 0) / statsArray.length) * 10) / 10 : 0,
+      avgRoi: statsArray.length > 0 ? Math.round((statsArray.reduce((s, st) => s + st.roi, 0) / statsArray.length) * 10) / 10 : 0,
+      totalUtilidad: Math.round(statsArray.reduce((s, st) => s + st.utilidad, 0)),
+      bestMonth: statsArray.length > 0 ? statsArray.reduce((best, st) => (st.utilidad > best.utilidad ? st : best)) : null,
     };
 
     return NextResponse.json({
       hotel: { id: hotel.id, name: hotel.hotelName },
-      stats,
+      stats: statsArray,
       summary,
     });
   } catch (error) {
@@ -155,9 +154,15 @@ export async function POST(req: NextRequest) {
     // Obtener últimas 6 estadísticas
     const stats = await prisma.statistics.findMany({
       where: { hotelId },
-      orderBy: { createdAt: "desc" },
+      orderBy: [
+        { year: "desc" },
+        { month: "desc" }
+      ],
       take: 6,
     });
+
+    // Asegurar orden cronológico para el prompt de la IA
+    const chronologicalStats = [...stats].sort((a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month));
 
     if (stats.length === 0) {
       return NextResponse.json(
@@ -167,7 +172,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generar análisis con Gemini basado en datos REALES
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const ingresoPromedio = Math.round(stats.reduce((s, st) => s + st.ingresos, 0) / stats.length);
     const ocupacionPromedio = Math.round((stats.reduce((s, st) => s + st.ocupacion, 0) / stats.length) * 100) / 100;
@@ -185,7 +190,7 @@ DATOS OPERACIONALES (últimos 6 meses):
 - Puntuación cliente: ${puntuacionPromedio}/5.0
 
 Variación mes a mes:
-${stats.map((st) => `  ${st.month}/${st.year}: Ing €${st.ingresos} | Ocup ${st.ocupacion}% | ROI ${st.roi}%`).join("\n")}
+${chronologicalStats.map((st) => `  ${st.month}/${st.year}: Ing €${st.ingresos} | Ocup ${st.ocupacion}% | ROI ${st.roi}%`).join("\n")}
 
 Proporciona un análisis REAL estructurado en JSON con:
 {
