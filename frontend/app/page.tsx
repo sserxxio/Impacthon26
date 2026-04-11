@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Sidebar from "./components/Sidebar";
 
 interface OracleResult {
   nombre: string;
@@ -175,14 +176,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-8 pb-32 flex flex-col items-center relative">
-      <header className="w-full max-w-6xl flex justify-between items-center mb-12">
-        <div>
-          <h1 className="text-3xl font-black text-blue-500 italic tracking-tighter">ORACLE AI</h1>
-          <p className="text-slate-500 text-xs uppercase tracking-widest">Connected: {hotelName}</p>
-        </div>
-        <button onClick={() => { localStorage.clear(); router.push("/login"); }} className="text-slate-500 hover:text-red-400 text-sm transition-colors">Cerrar Sesión</button>
-      </header>
+    <div className="min-h-screen bg-slate-950 text-white flex">
+      <Sidebar />
+      
+      <main className="flex-1 pb-32 flex flex-col items-center relative">
+        <header className="w-full max-w-6xl flex justify-between items-center mb-12 p-8">
+          <div>
+            <h1 className="text-3xl font-black text-blue-500 italic tracking-tighter">ORACLE AI</h1>
+            <p className="text-slate-500 text-xs uppercase tracking-widest">Connected: {hotelName}</p>
+          </div>
+        </header>
 
       {results.length === 0 && !loading && (
         <div className="my-auto flex flex-col items-center animate-pulse">
@@ -278,6 +281,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      </main>
 
       {/* Fixed Prompt Box */}
       <div className="fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-50">
