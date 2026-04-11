@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     // 🤖 Si no hay caché válido, llamar a Gemini
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: `Eres un consultor senior de revenue y marketing hotelero.
       Tu salida DEBE SER UNICAMENTE UN JSON con este formato:
       {

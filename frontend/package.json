@@ -17,7 +17,10 @@
     "csv-parse": "^6.2.1",
     "next": "16.2.3",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.8.1",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",
@@ -26,8 +29,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "es-node": "^10",
-    "tslint-config-next": "16.2.3",
+    "eslint-config-next": "16.2.3",
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
