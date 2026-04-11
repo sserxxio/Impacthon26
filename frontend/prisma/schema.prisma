@@ -119,7 +119,7 @@ model Analysis {
   recomendaciones  String? // JSON array
   
   // Metadata
-  modeloUsado      String   @default("gemini-2.0-flash")
+  modeloUsado      String   @default("gemini-1.5-flash")
   errorCount       Int      @default(0)
   
   createdAt        DateTime @default(now())

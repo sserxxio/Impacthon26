@@ -184,7 +184,7 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-8">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] p-8">
       <Header hotelName={hotelName} />
 
       {selectedHotel && (
@@ -194,16 +194,16 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
             {SERVICIOS.map((seccion) => (
               <div
                 key={seccion.categoria}
-                className="bg-slate-800 p-6 rounded-2xl border border-slate-700"
+                className="bg-white p-6 rounded-2xl border border-[#ae8d6e]"
               >
-                <h2 className="text-xl font-bold text-blue-400 mb-4">
+                <h2 className="text-xl font-bold text-[#683110] mb-4">
                   {seccion.categoria}
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
                   {seccion.items.map((item) => (
                     <label
                       key={item.key}
-                      className="flex items-center p-3 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 transition"
+                      className="flex items-center p-3 bg-[#683110] rounded-lg cursor-pointer hover:bg-[#683110] transition"
                     >
                       <input
                         type="checkbox"
@@ -220,7 +220,7 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
           </div>
 
           {/* Notas Adicionales */}
-          <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 mb-8">
+          <div className="bg-white p-6 rounded-2xl border border-[#ae8d6e] mb-8">
             <label className="block text-lg font-bold mb-4">
               📝 Notas Adicionales
             </label>
@@ -228,7 +228,7 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
               placeholder="Agrega cualquier información adicional sobre los servicios..."
-              className="w-full p-4 bg-slate-700 text-white rounded-lg border border-slate-600 min-h-24"
+              className="w-full p-4 bg-[#683110] text-[#5e0710] rounded-lg border border-[#683110] min-h-24"
             />
           </div>
 
@@ -237,13 +237,13 @@ export default function AmenitiesForm({ hotelId }: { hotelId?: number }) {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20"
+              className="flex-1 bg-[#683110] hover:bg-[#f5f4f1]0 disabled:bg-[#683110] px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-blue-500/20"
             >
               {loading ? "Guardando..." : "✅ Guardar Servicios"}
             </button>
             <button
               onClick={() => router.back()}
-              className="flex-1 bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-full font-bold transition-all"
+              className="flex-1 bg-[#683110] hover:bg-[#683110] px-8 py-4 rounded-full font-bold transition-all"
             >
               ← Volver
             </button>

@@ -39,9 +39,9 @@ export default function Home() {
     const storedHotelId = localStorage.getItem("hotelId");
     const storedHotelName = localStorage.getItem("hotelName");
     const storedSessions = localStorage.getItem("saved_sessions");
-    
+
     if (!storedHotelId) { router.push("/login"); return; }
-    
+
     const parsedId = parseInt(storedHotelId);
     setHotelId(parsedId);
     setHotelName(storedHotelName || "Hotel");
@@ -81,7 +81,7 @@ export default function Home() {
       // Fases de carga simuladas para mejor UX
       setLoadingPhase("LEYENDO");
       setProgress(15);
-      
+
       for (const item of prompts) {
         if (currentProcessId.current !== pid) break;
 
@@ -104,7 +104,7 @@ export default function Home() {
             refresh: refresh
           }),
         });
-        
+
         if (currentProcessId.current === pid) {
           setLoadingPhase("PREDICIENDO");
           setProgress(75);
@@ -140,16 +140,16 @@ export default function Home() {
   const iniciarEstrategia = (res: OracleResult) => {
     // Generar un ID único simple basado en el timestamp
     const sessionId = Date.now().toString();
-    res.id = sessionId; 
-    
+    res.id = sessionId;
+
     // Guardar los datos de esta estrategia concreta
     localStorage.setItem(`strategy_${sessionId}`, JSON.stringify(res));
-    
+
     // Añadir al índice de "Sesiones Guardadas"
     const saved = JSON.parse(localStorage.getItem('saved_sessions') || '[]');
-    const newSession = { 
-      id: sessionId, 
-      nombre: res.nombre, 
+    const newSession = {
+      id: sessionId,
+      nombre: res.nombre,
       tipo: res.tipo,
       fecha: new Date().toLocaleDateString()
     };
@@ -174,7 +174,7 @@ export default function Home() {
     try {
       setLoadingPhase("LEYENDO");
       setProgress(20);
-      
+
       const resPromise = fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -221,7 +221,7 @@ export default function Home() {
     // Esperar a que la animación de fade-out termine (0.5s)
     await new Promise(r => setTimeout(r, 500));
     setIsExiting(false);
-    
+
     if (results[0]?.tipo === "Estrategia Custom") {
       ejecutarConsultaCustom(lastUsedPrompt || undefined, true);
     } else {
@@ -232,9 +232,9 @@ export default function Home() {
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex h-screen overflow-hidden">
+    <div className="min-h-screen bg-[#f5f4f1] text-[#5e0710] flex h-screen overflow-hidden">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
         <main className="flex-1 overflow-y-auto relative scroll-smooth">
           <div className="max-w-4xl mx-auto p-4 md:p-8">
@@ -245,41 +245,41 @@ export default function Home() {
                 <div className="w-full max-w-md text-center">
                   {/* Icono Dinámico */}
                   <div className="relative mb-8 flex justify-center">
-                    <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse"></div>
-                    <div className="relative bg-slate-800 border-2 border-slate-700 p-6 rounded-3xl shadow-2xl animate-bounce">
+                    <div className="absolute inset-0 bg-[#f5f4f1]0/20 blur-3xl rounded-full animate-pulse"></div>
+                    <div className="relative bg-white border-2 border-[#ae8d6e] p-6 rounded-3xl shadow-lg animate-bounce">
                       <span className="text-4xl">
-                        {loadingPhase === "LEYENDO" ? "📖" : 
-                         loadingPhase === "ANALIZANDO" ? "🧠" : 
-                         loadingPhase === "PREDICIENDO" ? "🔮" : "✍️"}
+                        {loadingPhase === "LEYENDO" ? "📖" :
+                          loadingPhase === "ANALIZANDO" ? "🧠" :
+                            loadingPhase === "PREDICIENDO" ? "🔮" : "✍️"}
                       </span>
                     </div>
                   </div>
 
-                  <h2 className="text-2xl font-black mb-2 italic uppercase tracking-widest text-white">
-                    {loadingPhase === "LEYENDO" ? "Lectura de Contexto" : 
-                     loadingPhase === "ANALIZANDO" ? "Análisis de Datos" : 
-                     loadingPhase === "PREDICIENDO" ? "Modelo Predictivo" : "Redactando Estrategia"}
+                  <h2 className="text-2xl font-black mb-2 italic uppercase tracking-widest text-[#5e0710]">
+                    {loadingPhase === "LEYENDO" ? "Lectura de Contexto" :
+                      loadingPhase === "ANALIZANDO" ? "Análisis de Datos" :
+                        loadingPhase === "PREDICIENDO" ? "Modelo Predictivo" : "Redactando Estrategia"}
                   </h2>
-                  
-                  <p className="text-slate-400 text-sm mb-8 font-medium h-5">
-                    {loadingPhase === "LEYENDO" ? "Extrayendo KPIs y equipamiento del hotel..." : 
-                     loadingPhase === "ANALIZANDO" ? "Identificando patrones en el histórico..." : 
-                     loadingPhase === "PREDICIENDO" ? "Generando proyecciones para el corto plazo..." : "Finalizando tu propuesta maestra..."}
+
+                  <p className="text-[#ae8d6e] text-sm mb-8 font-medium h-5">
+                    {loadingPhase === "LEYENDO" ? "Extrayendo KPIs y equipamiento del hotel..." :
+                      loadingPhase === "ANALIZANDO" ? "Identificando patrones en el histórico..." :
+                        loadingPhase === "PREDICIENDO" ? "Generando proyecciones para el corto plazo..." : "Finalizando tu propuesta maestra..."}
                   </p>
 
                   {/* Barra de Progreso */}
-                  <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-[2px] mb-2">
-                     <div 
-                      className="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 rounded-full transition-all duration-500 ease-out relative"
+                  <div className="relative h-3 bg-[#f5f4f1] rounded-full overflow-hidden border border-[#ae8d6e] p-[2px] mb-2">
+                    <div
+                      className="h-full bg-gradient-to-r from-sky-600 via-sky-400 to-emerald-400 rounded-full transition-all duration-500 ease-out relative"
                       style={{ width: `${progress}%` }}
-                     >
-                       <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                     </div>
+                    >
+                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                    </div>
                   </div>
-                  
-                  <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-slate-500">
-                     <span>Fase: {loadingPhase}</span>
-                     <span>{progress}%</span>
+
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-tighter text-[#f5f4f1]0">
+                    <span>Fase: {loadingPhase}</span>
+                    <span>{progress}%</span>
                   </div>
                 </div>
               </div>
@@ -290,12 +290,12 @@ export default function Home() {
               <div className={`flex flex-col items-center w-full gap-6 pb-10 ${isExiting ? "animate-fade-out-up" : ""}`}>
                 {results.length > 0 && (
                   <div className="w-full flex justify-between items-center mb-6 animate-fade-in z-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-slate-300 italic opacity-90 drop-shadow-lg">
+                    <h2 className="text-2xl md:text-3xl font-bold text-[#683110] italic opacity-90 drop-shadow-lg">
                       Aquí tienes tu estrategia integral
                     </h2>
-                    <button 
+                    <button
                       onClick={manejarRecarga}
-                      className="flex items-center gap-2 px-6 py-3 bg-slate-800/50 hover:bg-slate-700 border border-slate-700 rounded-2xl text-xs font-bold text-slate-400 hover:text-white transition-all group"
+                      className="flex items-center gap-2 px-6 py-3 bg-[#f5f4f1] hover:bg-[#ae8d6e] border border-[#ae8d6e] rounded-2xl text-xs font-bold text-[#5e0710] hover:text-[#5e0710] transition-all group"
                       title="Generar una versión alternativa"
                     >
                       <span className="group-hover:rotate-180 transition-transform duration-500">🔄</span>
@@ -308,20 +308,20 @@ export default function Home() {
                     <div
                       key={i}
                       onClick={() => setSelected(res)}
-                      className="cursor-pointer bg-slate-800/40 border border-slate-700/50 p-6 rounded-3xl hover:border-blue-500/50 hover:bg-slate-800/80 transition-all text-left flex flex-col justify-between shadow-xl group relative min-h-[16rem]"
+                      className="cursor-pointer bg-white border border-[#ae8d6e]/30 p-6 rounded-3xl hover:border-[#ae8d6e]/50 hover:bg-[#f5f4f1] transition-all text-left flex flex-col justify-between shadow-md group relative min-h-[16rem]"
                     >
                       <div>
-                        <span className={`text-[10px] font-black px-3 py-1 rounded-full mb-3 inline-block uppercase ${res.tipo.includes("Estrategia") ? "bg-blue-500/10 text-blue-400" : "bg-purple-500/10 text-purple-400"}`}>
+                        <span className={`text-[10px] font-black px-3 py-1 rounded-full mb-3 inline-block uppercase ${res.tipo.includes("Estrategia") ? "bg-[#f5f4f1] text-[#683110]" : "bg-amber-100 text-amber-900"}`}>
                           {res.tipo}
                         </span>
-                        <h2 className="font-bold text-xl text-white group-hover:text-blue-400 leading-tight uppercase italic mb-2">{res.nombre}</h2>
-                        <p className="text-sm text-slate-400 line-clamp-2">{res.descripcion}</p>
+                        <h2 className="font-bold text-xl text-[#5e0710] group-hover:text-[#683110] leading-tight uppercase italic mb-2">{res.nombre}</h2>
+                        <p className="text-sm text-[#ae8d6e] line-clamp-2">{res.descripcion}</p>
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); iniciarEstrategia(res); }}
-                        className="mt-6 w-full bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white font-bold py-3 rounded-xl transition-all text-sm uppercase tracking-wide border border-blue-500/20 hover:border-blue-500"
+                        className="mt-6 w-full bg-[#5e0710] hover:bg-[#5e0710]/90 text-[#f5f4f1] font-bold py-3 rounded-xl transition-all text-sm uppercase tracking-wide border border-[#683110] hover:border-[#ae8d6e]"
                       >
-                        🚀 Comenzar Estrategia
+                        Comenzar Estrategia
                       </button>
                     </div>
                   ))}
@@ -332,42 +332,42 @@ export default function Home() {
 
           {/* Popup / Modal */}
           {selected && (
-            <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-              <div className="bg-slate-900 border border-slate-700 w-full max-w-5xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative max-h-[90vh] flex flex-col">
-                <button onClick={() => setSelected(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white text-2xl transition-colors z-20">✕</button>
-                
+            <div className="fixed inset-0 bg-[#683110]/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+              <div className="bg-white border border-[#ae8d6e]/30 w-full max-w-5xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative max-h-[90vh] flex flex-col">
+                <button onClick={() => setSelected(null)} className="absolute top-8 right-8 text-[#f5f4f1] hover:text-[#5e0710] text-2xl transition-colors z-20">✕</button>
+
                 <div className="overflow-y-auto pr-4 custom-scrollbar">
-                  <span className="text-blue-500 font-mono text-xs font-bold uppercase tracking-[0.3em]">{selected.tipo}</span>
-                  <h2 className="text-3xl md:text-5xl font-black mb-8 italic uppercase leading-none tracking-tighter">{selected.nombre}</h2>
+                  <span className="text-[#683110] font-mono text-xs font-bold uppercase tracking-[0.3em]">{selected.tipo}</span>
+                  <h2 className="text-3xl md:text-5xl font-black mb-8 italic uppercase leading-none tracking-tighter text-[#5e0710]">{selected.nombre}</h2>
 
                   <div className="space-y-10">
                     <section>
-                      <h3 className="text-slate-500 text-[10px] font-bold uppercase mb-3 tracking-widest border-l-2 border-blue-500 pl-3">Hoja de Ruta</h3>
+                      <h3 className="text-[#ae8d6e]-500 text-[10px] font-bold uppercase mb-3 tracking-widest border-l-2 border-[#ae8d6e] pl-3">Hoja de Ruta</h3>
                       <MarkdownRenderer content={selected.estrategia} />
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-                        <h3 className="text-orange-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
-                        <p className="text-xl font-bold text-white">{selected.coste}</p>
+                      <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
+                        <h3 className="text-[#ae8d6e] text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
+                        <p className="text-xl font-bold text-[#5e0710]">{selected.coste}</p>
                       </div>
-                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-                        <h3 className="text-emerald-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Plazo de Implementación</h3>
-                        <p className="text-xl font-bold text-white">{selected.tiempo}</p>
+                      <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
+                        <h3 className="text-[#683110] text-[10px] font-bold uppercase mb-2 tracking-widest">Plazo de Implementación</h3>
+                        <p className="text-xl font-bold text-[#5e0710]">{selected.tiempo}</p>
                       </div>
-                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-                        <h3 className="text-blue-400 text-[10px] font-bold uppercase mb-2 tracking-widest">ROI Proyectado</h3>
-                        <p className="text-xl font-bold text-white">{selected.roi}</p>
+                      <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
+                        <h3 className="text-[#683110] text-[10px] font-bold uppercase mb-2 tracking-widest">ROI Proyectado</h3>
+                        <p className="text-xl font-bold text-[#ae8d6e]">{selected.roi}</p>
                       </div>
-                      <div className="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-                        <h3 className="text-fuchsia-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Target de Mercado</h3>
-                        <p className="text-xl font-bold text-white">{selected.targeting}</p>
+                      <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
+                        <h3 className="text-purple-900 text-[10px] font-bold uppercase mb-2 tracking-widest">Target de Mercado</h3>
+                        <p className="text-xl font-bold text-[#5e0710]">{selected.targeting}</p>
                       </div>
                     </div>
 
                     <button
                       onClick={() => iniciarEstrategia(selected)}
-                      className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-3xl transition-all shadow-xl shadow-blue-500/20 uppercase tracking-[0.2em] text-xl hover:scale-[1.02] active:scale-[0.98]"
+                      className="w-full mt-4 bg-[#c50000] hover:bg-[#c50000]/90 text-[#f5f4f1] font-black py-5 rounded-3xl transition-all shadow-lg shadow-[#c50000]/700/20 uppercase tracking-[0.2em] text-xl hover:scale-[1.02] active:scale-[0.98]"
                     >
                       🚀 Iniciar esta Estrategia
                     </button>
@@ -379,7 +379,7 @@ export default function Home() {
         </main>
 
         {/* Input Area - Non-fixed, within flex container */}
-        <div className="w-full bg-slate-950/50 backdrop-blur-xl border-t border-slate-800/60 p-6 shrink-0 z-10">
+        <div className="w-full bg-white/50 backdrop-blur-xl border-t border-[#ae8d6e]/30/60 p-6 shrink-0 z-10">
           <div className="max-w-4xl mx-auto flex gap-4 items-center">
             <div className="flex-1 relative group">
               <input
@@ -390,14 +390,14 @@ export default function Home() {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") ejecutarConsultaCustom();
                 }}
-                className="w-full bg-slate-900/80 border border-slate-700/50 rounded-2xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all shadow-inner"
+                className="w-full bg-white border border-[#ae8d6e] rounded-2xl px-6 py-4 text-[#5e0710] placeholder-gray-500 focus:outline-none focus:border-[#ae8d6e]/50 focus:ring-1 focus:ring-[#ae8d6e]/20 transition-all shadow-sm"
               />
-              <div className="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
+              <div className="absolute inset-0 rounded-2xl bg-[#f5f4f1]0/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
             </div>
             <button
               onClick={ejecutarConsultaCustom}
               disabled={!promptText.trim()}
-              className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 rounded-2xl flex shrink-0 items-center justify-center font-black transition-all shadow-lg shadow-blue-500/20 text-white text-xl hover:scale-105 active:scale-95"
+              className="bg-[#c50000] hover:bg-[#c50000]/90 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 rounded-2xl flex shrink-0 items-center justify-center font-black transition-all shadow-lg shadow-[#c50000]/700/20 text-[#f5f4f1] text-xl hover:scale-105 active:scale-95"
               title="Recibir consejo instantáneo"
             >
               ⚡
