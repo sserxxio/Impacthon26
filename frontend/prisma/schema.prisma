@@ -111,6 +111,7 @@ model Analysis {
   anuncio          String
   segmentoObjeto   String?
   diferencadores   String?
+  tipo             String?
   
   // Recomendaciones de mejora
   recomendaciones  String? // JSON array

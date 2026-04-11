@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface OracleResult {
@@ -19,6 +19,8 @@ export default function Home() {
   const [results, setResults] = useState<OracleResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<OracleResult | null>(null);
+  const [promptText, setPromptText] = useState("");
+  const currentProcessId = useRef(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,18 +32,34 @@ export default function Home() {
   }, [router]);
 
   const ejecutarAnalisisCompleto = async () => {
+    const pid = Date.now();
+    currentProcessId.current = pid;
     setLoading(true);
     setResults([]);
 
     const prompts = [
-      { t: "Corto Plazo", p: "Estrategia de Revenue Management para subir ADR inmediato." },
-      { t: "Corto Plazo", p: "Estrategia de Experiencia de Cliente para mejorar reseñas." },
-      { t: "Largo Plazo", p: "Plan de Transformación Digital e IA a 12 meses." },
-      { t: "Largo Plazo", p: "Estrategia de Sostenibilidad y Marca Premium a 2 años." }
+      {
+        t: "Corto Plazo",
+        p: "Foco: REVENUE Y PRECIOS. Genera una táctica agresiva para maximizar el ADR mediante paquetes dinámicos y optimización de canales OTA este mes."
+      },
+      {
+        t: "Corto Plazo",
+        p: "Foco: REPUTACIÓN Y OPERACIONES. Genera una táctica de Guest Experience para disparar las reseñas positivas en Google y TripAdvisor mediante un 'efecto WOW' inmediato."
+      },
+      {
+        t: "Largo Plazo",
+        p: "Foco: TECNOLOGÍA E IA. Planifica la implementación de IA generativa para hiper-personalización del customer journey y automatización de procesos internos a 1 año."
+      },
+      {
+        t: "Largo Plazo",
+        p: "Foco: MARCA Y SOSTENIBILIDAD. Planifica un reposicionamiento estratégico hacia el mercado de lujo eco-consciente con certificaciones y cambios estructurales a 2 años."
+      }
     ];
 
     try {
       for (const item of prompts) {
+        if (currentProcessId.current !== pid) break;
+
         const res = await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -53,19 +71,66 @@ export default function Home() {
           }),
         });
         const result = await res.json();
+        
+        if (currentProcessId.current !== pid) break;
         setResults(prev => [...prev, { ...result, tipo: item.t }]);
+        
+        // Retraso artificial de 4 segundos para evitar que Google Gemini bloquee
+        // por ráfaga de peticiones (Rate Limit 429) en el plan gratuito.
+        await new Promise(r => setTimeout(r, 4000));
       }
     } catch (e) {
       console.error("Error cargando estrategias");
     } finally {
-      setLoading(false);
+      if (currentProcessId.current === pid) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const iniciarEstrategia = (res: OracleResult) => {
+    localStorage.setItem("currentStrategy", JSON.stringify(res));
+    router.push("/strategy");
+  };
+
+  const ejecutarConsultaCustom = async () => {
+    if (!promptText.trim()) return;
+
+    const pid = Date.now();
+    currentProcessId.current = pid; // Detiene cualquier bucle de 4-cajas en curso
+    setLoading(true);
+    setResults([]); // Borrar cajas anteriores
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: promptText,
+          hotelId: hotelId,
+          tipo: "Estrategia Custom",
+          datosHotel: { nombre: hotelName }
+        }),
+      });
+      const result = await res.json();
+      
+      if (currentProcessId.current === pid) {
+        setResults([{ ...result, tipo: "Estrategia Custom" }]);
+      }
+    } catch (e) {
+      console.error("Error en consulta custom");
+    } finally {
+      if (currentProcessId.current === pid) {
+        setLoading(false);
+        setPromptText("");
+      }
     }
   };
 
   if (!hotelId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-slate-950 text-white p-8 pb-32 flex flex-col items-center relative">
       <header className="w-full max-w-6xl flex justify-between items-center mb-12">
         <div>
           <h1 className="text-3xl font-black text-blue-500 italic tracking-tighter">ORACLE AI</h1>
@@ -96,19 +161,25 @@ export default function Home() {
       {/* Grid de Resultados */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl my-auto">
         {results.map((res, i) => (
-          <button
+          <div
             key={i}
             onClick={() => setSelected(res)}
-            className="bg-slate-900 border border-slate-800 p-6 rounded-3xl hover:border-blue-500/50 hover:bg-slate-800/80 transition-all text-left flex flex-col justify-between h-56 shadow-xl group"
+            className="cursor-pointer bg-slate-900 border border-slate-800 p-6 rounded-3xl hover:border-blue-500/50 hover:bg-slate-800/80 transition-all text-left flex flex-col justify-between shadow-xl group relative h-64"
           >
             <div>
-              <span className={`text-[10px] font-black px-3 py-1 rounded-full mb-3 inline-block uppercase ${res.tipo.includes("Corto") ? "bg-cyan-500/10 text-cyan-400" : "bg-purple-500/10 text-purple-400"}`}>
+              <span className={`text-[10px] font-black px-3 py-1 rounded-full mb-3 inline-block uppercase ${res.tipo.includes("Corto") || res.tipo.includes("Custom") ? "bg-cyan-500/10 text-cyan-400" : "bg-purple-500/10 text-purple-400"}`}>
                 {res.tipo}
               </span>
-              <h2 className="font-bold text-lg text-white group-hover:text-blue-400 leading-tight uppercase italic">{res.nombre}</h2>
+              <h2 className="font-bold text-lg text-white group-hover:text-blue-400 leading-tight uppercase italic mb-2">{res.nombre}</h2>
+              <p className="text-sm text-slate-500 line-clamp-2">{res.descripcion}</p>
             </div>
-            <p className="text-sm text-slate-500 line-clamp-2">{res.descripcion}</p>
-          </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); iniciarEstrategia(res); }}
+              className="mt-4 w-full bg-slate-800 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-colors text-sm uppercase tracking-wide border border-slate-700 hover:border-emerald-500"
+            >
+              🚀 Comenzar
+            </button>
+          </div>
         ))}
       </div>
 
@@ -147,10 +218,41 @@ export default function Home() {
                   <p className="text-sm text-slate-300">{selected.targeting}</p>
                 </div>
               </div>
+
+              <button
+                onClick={() => iniciarEstrategia(selected)}
+                className="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-emerald-500/20 uppercase tracking-widest text-lg"
+              >
+                🚀 Comenzar Estrategia
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Fixed Prompt Box */}
+      <div className="fixed bottom-0 left-0 w-full bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 p-4 z-50">
+        <div className="max-w-4xl mx-auto flex gap-4 items-center">
+          <input
+            type="text"
+            placeholder="Pide una estrategia personalizada para tu hotel... (ej. 'Evento corporativo en invierno')"
+            value={promptText}
+            onChange={(e) => setPromptText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") ejecutarConsultaCustom();
+            }}
+            className="flex-1 bg-slate-800 border border-slate-700 rounded-full px-6 py-4 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+          />
+          <button
+            onClick={ejecutarConsultaCustom}
+            disabled={!promptText.trim()}
+            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed w-14 h-14 rounded-full flex shrink-0 items-center justify-center font-bold transition-all shadow-lg shadow-blue-500/20"
+            title="Enviar petición rápida"
+          >
+            ⚡
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
