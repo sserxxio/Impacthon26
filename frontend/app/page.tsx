@@ -379,7 +379,7 @@ export default function Home() {
                       <MarkdownRenderer content={selected.estrategia} />
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                       <div className="bg-[#f5f4f1] p-6 rounded-3xl border border-[#ae8d6e]/30 hover:border-[#ae8d6e] transition-colors">
                         <h3 className="text-emerald-700 text-[10px] font-bold uppercase mb-2 tracking-widest">Presupuesto Estimado</h3>
                         <p className="text-xl font-bold text-[#5e0710]">{selected.coste}</p>
